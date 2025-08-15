@@ -1,0 +1,213 @@
+{
+  "news": [
+    {
+      "id": 1,
+      "topic": "City Introduces New Bike Lanes",
+      "details": "The local government has installed new bike lanes to promote eco-friendly transportation.",
+      "reporter": "Alice Johnson",
+      "datetime": "2025-08-01T09:15:00Z",
+      "image": "bike-lanes.jpg",
+      "fakeVoteCount": 2,
+      "verifiedVoteCount": 45,
+      "comments": ["Great initiative!", "Finally, safer cycling routes."]
+    },
+    {
+      "id": 2,
+      "topic": "Chocolate Shortage Expected Worldwide",
+      "details": "Experts warn of a possible global chocolate shortage due to poor cocoa harvests.",
+      "reporter": "Michael Lee",
+      "datetime": "2025-07-29T14:20:00Z",
+      "image": "chocolate-shortage.jpg",
+      "fakeVoteCount": 5,
+      "verifiedVoteCount": 12,
+      "comments": ["Say it isn't so!", "Stocking up now."]
+    },
+    {
+      "id": 3,
+      "topic": "Celebrity Adopts 5 Rescue Dogs",
+      "details": "A famous actor has adopted five rescue dogs from a local shelter.",
+      "reporter": "Sarah Kim",
+      "datetime": "2025-08-10T11:45:00Z",
+      "image": "celebrity-dogs.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 88,
+      "comments": ["That's amazing!", "More celebrities should do this."]
+    },
+    {
+      "id": 4,
+      "topic": "Alien Ship Spotted Over City",
+      "details": "Multiple witnesses claim to have seen a UFO hovering over the downtown area.",
+      "reporter": "Tom Reynolds",
+      "datetime": "2025-08-12T21:30:00Z",
+      "image": "ufo-city.jpg",
+      "fakeVoteCount": 73,
+      "verifiedVoteCount": 4,
+      "comments": ["No way that's real.", "Photoshop strikes again."]
+    },
+    {
+      "id": 5,
+      "topic": "New Smartphone Breaks Sales Records",
+      "details": "The latest smartphone release has sold over 2 million units in 24 hours.",
+      "reporter": "Emily Carter",
+      "datetime": "2025-08-05T10:05:00Z",
+      "image": "smartphone.jpg",
+      "fakeVoteCount": 1,
+      "verifiedVoteCount": 54,
+      "comments": ["I got one!", "Best phone I've used."]
+    },
+    {
+      "id": 6,
+      "topic": "Giant Pumpkin Wins Local Fair",
+      "details": "A farmer has grown a pumpkin weighing over 900 kg, breaking the regional record.",
+      "reporter": "Chris Howard",
+      "datetime": "2025-08-14T08:00:00Z",
+      "image": "giant-pumpkin.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 35,
+      "comments": ["That's huge!", "Pumpkin pie for everyone."]
+    },
+    {
+      "id": 7,
+      "topic": "Robots Replace Waiters in Popular Restaurant",
+      "details": "A trendy restaurant has introduced robots to serve customers.",
+      "reporter": "Anna Wilson",
+      "datetime": "2025-07-25T19:40:00Z",
+      "image": "robot-waiters.jpg",
+      "fakeVoteCount": 3,
+      "verifiedVoteCount": 9,
+      "comments": ["Future is here!", "I miss human interaction."]
+    },
+    {
+      "id": 8,
+      "topic": "World’s Oldest Cat Turns 30",
+      "details": "A cat from Texas has officially turned 30 years old, setting a world record.",
+      "reporter": "David Brown",
+      "datetime": "2025-08-09T06:50:00Z",
+      "image": "oldest-cat.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 64,
+      "comments": ["Happy birthday!", "What’s the secret?"]
+    },
+    {
+      "id": 9,
+      "topic": "Ice Cream That Never Melts Invented",
+      "details": "Scientists claim to have developed ice cream that can stay solid for hours.",
+      "reporter": "Laura Green",
+      "datetime": "2025-08-02T15:25:00Z",
+      "image": "never-melt-icecream.jpg",
+      "fakeVoteCount": 4,
+      "verifiedVoteCount": 20,
+      "comments": ["Summer just got better.", "Sounds suspicious."]
+    },
+    {
+      "id": 10,
+      "topic": "Historic Castle Put Up for Sale",
+      "details": "A 500-year-old castle in Europe is now available for private ownership.",
+      "reporter": "Peter Hall",
+      "datetime": "2025-08-11T13:00:00Z",
+      "image": "castle-sale.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 42,
+      "comments": ["Dream home!", "Probably too expensive."]
+    },
+    {
+      "id": 11,
+      "topic": "Man Claims to Time Travel from 2050",
+      "details": "An individual says he traveled from the future to warn humanity.",
+      "reporter": "James Allen",
+      "datetime": "2025-08-07T22:10:00Z",
+      "image": "time-traveler.jpg",
+      "fakeVoteCount": 95,
+      "verifiedVoteCount": 1,
+      "comments": ["Yeah right.", "Sounds like a movie plot."]
+    },
+    {
+      "id": 12,
+      "topic": "New Eco-Friendly Car Model Released",
+      "details": "Automaker launches a fully electric car with record range and efficiency.",
+      "reporter": "Rachel Adams",
+      "datetime": "2025-08-03T12:15:00Z",
+      "image": "eco-car.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 33,
+      "comments": ["Love the design!", "Can’t wait to test drive."]
+    },
+    {
+      "id": 13,
+      "topic": "Giant Robot Parade Stuns City Residents",
+      "details": "Robotic sculptures march through downtown in a special festival.",
+      "reporter": "Kevin Scott",
+      "datetime": "2025-08-08T17:20:00Z",
+      "image": "robot-parade.jpg",
+      "fakeVoteCount": 2,
+      "verifiedVoteCount": 11,
+      "comments": ["Wow!", "Looks amazing."]
+    },
+    {
+      "id": 14,
+      "topic": "Breakthrough in Renewable Energy Storage",
+      "details": "Researchers invent a battery that stores twice as much energy as existing models.",
+      "reporter": "Megan Liu",
+      "datetime": "2025-08-06T09:50:00Z",
+      "image": "energy-storage.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 55,
+      "comments": ["Huge progress!", "The future is bright."]
+    },
+    {
+      "id": 15,
+      "topic": "Local Library Offers 24/7 Access",
+      "details": "The library implements automated systems for round-the-clock usage.",
+      "reporter": "Daniel White",
+      "datetime": "2025-08-04T07:30:00Z",
+      "image": "library.jpg",
+      "fakeVoteCount": 1,
+      "verifiedVoteCount": 29,
+      "comments": ["Super convenient!", "Love it!"]
+    },
+    {
+      "id": 16,
+      "topic": "Town Declares Emergency After Heavy Rain",
+      "details": "Flooding forces evacuation and emergency services mobilization.",
+      "reporter": "Olivia King",
+      "datetime": "2025-08-12T05:45:00Z",
+      "image": "flood.jpg",
+      "fakeVoteCount": 3,
+      "verifiedVoteCount": 8,
+      "comments": ["Stay safe!", "Hope everyone is okay."]
+    },
+    {
+      "id": 17,
+      "topic": "Rare Bird Species Spotted in Urban Park",
+      "details": "Bird watchers report seeing a rare species in the city center.",
+      "reporter": "Sophia Martinez",
+      "datetime": "2025-08-09T16:10:00Z",
+      "image": "rare-bird.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 48,
+      "comments": ["Amazing sighting!", "Beautiful bird."]
+    },
+    {
+      "id": 18,
+      "topic": "Ancient Artifact Found Under Construction Site",
+      "details": "Archaeologists discover a historic relic while excavating a building site.",
+      "reporter": "Ethan Clark",
+      "datetime": "2025-08-11T11:00:00Z",
+      "image": "artifact.jpg",
+      "fakeVoteCount": 0,
+      "verifiedVoteCount": 36,
+      "comments": ["Incredible find!", "History comes alive."]
+    },
+    {
+      "id": 19,
+      "topic": "Viral Challenge Turns Dangerous",
+      "details": "A popular online challenge causes injuries among teenagers.",
+      "reporter": "Liam Johnson",
+      "datetime": "2025-08-13T20:25:00Z",
+      "image": "viral-challenge.jpg",
+      "fakeVoteCount": 67,
+      "verifiedVoteCount": 3,
+      "comments": ["This is unsafe!", "People need to stop."]
+    }
+  ]
+}
