@@ -1,3 +1,8 @@
 <script setup lang="ts"></script>
 
-<template></template>
+<template>
+  <div class="p-6">
+    <router-view />
+  </div>
+</template>
+
