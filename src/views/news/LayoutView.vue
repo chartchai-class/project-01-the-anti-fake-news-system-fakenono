@@ -1,4 +1,22 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import NewsService from '@/services/NewsService';
+import { useNewsStore } from '@/stores/news';
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+
+const props = defineProps<{ id: number }>();
+const tempId=useRoute().params.id//use tempId as I cannot not receive props yet
+const newsStore = useNewsStore();
+onMounted(() => {
+        NewsService.getNewsById(tempId).then(news => {
+            newsStore.setNews(news.data)
+            console.log(news.data)
+        }).catch((err)=>console.log(err))
+  
+})
+
+
+</script>
 
 <template>
     <div class="p-10 pt-5 pb-5 text-center md:text-left ">
@@ -12,15 +30,6 @@
     </div>
 
 
-    <!-- <div class="sub-route-tabs flex flex-row flex-wrap place-content-center justify-between px-2 pt-3 pb-3 border border-t-2 md:w-[80%] w-[95%] mx-auto my-10">
-        <div class="sub-route">
-            <RouterLink :to="{name:'news-details-view'}">Details</RouterLink>
-        </div>
- <div class="sub-route"><RouterLink :to="{name:'news-comment-view'}">Comments</RouterLink>
-</div>
- <div class="sub-route"><RouterLink :to="{name:'news-vote-view'}">Votes</RouterLink>
-</div>
-    </div> -->
     <div class="flex bg-gray-100 rounded-full p-1 md:w-[80%] w-[95%] mx-auto my-10">
   <RouterLink
     :to="{ name: 'news-details-view' }"
@@ -36,6 +45,7 @@
     class="flex-1 text-center py-2 rounded-full font-semibold text-gray-700"
     active-class="bg-white shadow"
     exact-active-class="bg-white shadow"
+   
   >
     Comments
   </RouterLink>
