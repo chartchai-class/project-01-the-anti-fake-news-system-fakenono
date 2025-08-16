@@ -1,3 +1,7 @@
 <script setup lang="ts"></script>
 
-<template></template>
+<template>
+    <p>Comments view
+        
+    </p>
+</template>
