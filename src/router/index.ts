@@ -7,6 +7,7 @@ import DetailsView from '@/views/news/DetailsView.vue'
 import LayoutView from '@/views/news/LayoutView.vue'
 import VoteView from '@/views/news/VoteView.vue'
 import PostView from '@/views/PostView.vue'
+import nProgress from 'nprogress'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -68,6 +69,14 @@ const router = createRouter({
       component: PostView,
     },
   ],
+})
+
+router.beforeEach(() => {
+  nProgress.start()
+})
+
+router.afterEach(() => {
+  nProgress.done()
 })
 
 export default router
