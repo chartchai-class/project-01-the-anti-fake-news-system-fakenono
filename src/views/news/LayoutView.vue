@@ -4,8 +4,8 @@ import { useNewsStore } from '@/stores/news';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const props = defineProps<{ id: number }>();
-const tempId=useRoute().params.id//use tempId as I cannot not receive props yet
+
+const tempId=parseInt((useRoute().params.id).toString())
 const newsStore = useNewsStore();
 onMounted(() => {
         NewsService.getNewsById(tempId).then(news => {

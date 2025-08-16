@@ -3,7 +3,12 @@ import { useNewsStore } from '@/stores/news';
 import { storeToRefs } from 'pinia';
 
 const newsStore = useNewsStore()
-const{news}=storeToRefs(newsStore)
+const { news } = storeToRefs(newsStore)
+
+
+
+
+
 </script>
 
 <template>
