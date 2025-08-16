@@ -1,9 +1,13 @@
+import NewsService from '@/services/NewsService'
+import { useNewsListStore } from '@/stores/newslist'
+import { NewsStatus } from '@/types'
 import HomeView from '@/views/HomeView.vue'
 import CommentsView from '@/views/news/CommentsView.vue'
 import DetailsView from '@/views/news/DetailsView.vue'
 import LayoutView from '@/views/news/LayoutView.vue'
 import VoteView from '@/views/news/VoteView.vue'
 import PostView from '@/views/PostView.vue'
+import nProgress from 'nprogress'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -13,6 +17,27 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      beforeEnter: () => {
+        const newsListStore = useNewsListStore()
+        return NewsService.getNews()
+          .then((response) => {
+            const newsList = response.data
+            for (const news of newsList) {
+              const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
+              if (totalVoteCount < 20) {
+                news.status = NewsStatus.Pending
+              } else if (news.verifiedVoteCount / totalVoteCount < 0.6) {
+                news.status = NewsStatus.Fake
+              } else {
+                news.status = NewsStatus.Verified
+              }
+            }
+            newsListStore.setNewsList(newsList)
+          })
+          .catch((error) => {
+            console.error('Failed to fetch news:', error)
+          })
+      },
     },
     {
       path: '/news/:id',
@@ -44,6 +69,14 @@ const router = createRouter({
       component: PostView,
     },
   ],
+})
+
+router.beforeEach(() => {
+  nProgress.start()
+})
+
+router.afterEach(() => {
+  nProgress.done()
 })
 
 export default router

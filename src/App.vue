@@ -6,6 +6,8 @@
       <span class="text-white">FakeNoNo</span>
     </h1>
   </header>
+
+  <RouterView />
 </template>
 
 <style scoped></style>
