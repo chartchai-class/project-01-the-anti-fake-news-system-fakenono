@@ -20,3 +20,7 @@ export interface News {
 export interface NewsState {
   news: News | null
 }
+
+export interface NewsListState {
+  newslist: News[] | null
+}
