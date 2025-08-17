@@ -24,3 +24,15 @@ export interface NewsState {
 export interface NewsListState {
   newslist: News[] | null
 }
+
+export interface Comment{
+  id: number,
+  newsId: number,
+  commenter: string,
+  date: Date,
+  comment:string
+}
+
+export interface CommentListState{
+  commentlist:Comment[]|null
+}
