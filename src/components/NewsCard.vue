@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <RouterLink :to="`/news/${news.id}`">
     <div
-      class="border-[2px] p-4 m-2 w-[90%] h-[25rem] rounded-lg shadow hover:shadow-lg transition-shadow hover:scale-[1.01]"
+      class="border-[2px] p-4 m-2 w-[90%] h-[28rem] rounded-lg shadow hover:shadow-lg transition-shadow hover:scale-[1.01]"
     >
       <h3 class="text-xl font-bold mb-2 h-14">
         {{ news.topic }}
