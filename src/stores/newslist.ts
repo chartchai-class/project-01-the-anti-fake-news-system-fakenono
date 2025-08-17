@@ -24,5 +24,12 @@ export const useNewsListStore = defineStore('newslist', {
         }
       }
     },
+    getNextId() {
+      if (this.newslist && this.newslist.length > 0) {
+        const maxId = Math.max(...this.newslist.map((item) => item.id))
+        return maxId + 1
+      }
+      return 1
+    },
   },
 })
