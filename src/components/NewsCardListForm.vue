@@ -11,7 +11,7 @@ defineProps<{
     <div
       class="border-[2px] flex flex-row p-4 m-2 w-[90%] h-[12rem] rounded-lg shadow hover:shadow-lg transition-shadow hover:scale-[1.01]"
     >
-      <div class="w-[30%] h-full p-2">
+      <div class="w-[20%] h-full p-2">
         <img
           :src="news.image"
           alt="News Image"
@@ -19,7 +19,7 @@ defineProps<{
         />
       </div>
 
-      <div class="p-2">
+      <div class="p-2 w-[80%]">
         <h3 class="text-xl font-bold mb-2 h-14">
           {{ news.topic }}
           <span
@@ -34,7 +34,7 @@ defineProps<{
           >
           <span v-else class="bg-gray-600 text-white text-sm border p-1 rounded-xl">Pending</span>
         </h3>
-        <p class="text-gray-600">{{ news.details.slice(0, 150) }}...</p>
+        <p class="text-gray-600 break-all">{{ news.details.slice(0, 150) }}...</p>
         <p class="text-sm text-gray-500 mt-2">
           <span class="font-semibold">{{ news.reporter }}</span> |
           <span>{{ new Date(news.datetime).toLocaleDateString() }}</span>
