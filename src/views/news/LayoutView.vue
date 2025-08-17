@@ -1,49 +1,42 @@
 <script setup lang="ts">
-import CommentService from '@/services/CommentService';
-import { useCommentListStore } from '@/stores/commentlists';
-import { useNewsStore } from '@/stores/news';
-import { useNewsListStore } from '@/stores/newslist';
-import { NewsStatus, type News } from '@/types';
-import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import CommentService from '@/services/CommentService'
+import { useCommentListStore } from '@/stores/commentlists'
+import { useNewsStore } from '@/stores/news'
+import { useNewsListStore } from '@/stores/newslist'
+import { NewsStatus, type News } from '@/types'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
 const tempId = parseInt(useRoute().params.id.toString())
 const newsStore = useNewsStore()
 const newslistStore = useNewsListStore()
 const { newslist } = storeToRefs(newslistStore)
 const news = ref(null)
-const commentListStore=useCommentListStore()
+const commentListStore = useCommentListStore()
 onMounted(() => {
-       news.value = newslist.value.find((item) => item.id === tempId) || null
+  news.value = newslist.value.find((item) => item.id === tempId) || null
   newsStore.setNews(news.value)
+  watchEffect(() => {
+    setStatus(news.value)
+  })
 
-  CommentService.getCommentsByNewsId(tempId).then(comments => {
+  CommentService.getCommentsByNewsId(tempId).then((comments) => {
     commentListStore.setCommentList(comments)
-          console.log("StoreData:",commentListStore.commentlist)
-        })
-  
+    console.log('StoreData:', commentListStore.commentlist)
+  })
 })
 
-function setStatus(news: News): void{
-    const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
-              if (totalVoteCount < 20) {
-                news.status = NewsStatus.Pending
-              } else if (news.verifiedVoteCount / totalVoteCount < 0.6) {
-                news.status = NewsStatus.Fake
-              } else {
-                news.status = NewsStatus.Verified
-              }
+function setStatus(news: News): void {
+  const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
+  if (totalVoteCount < 20) {
+    news.status = NewsStatus.Pending
+  } else if (news.verifiedVoteCount / totalVoteCount < 0.6) {
+    news.status = NewsStatus.Fake
+  } else {
+    news.status = NewsStatus.Verified
+  }
 }
-
-
-
-
-  // NewsService.getNewsById(tempId).then(news => {
-  //     newsStore.setNews(news.data)
-  //     console.log(news.data)
-  // }).catch((err)=>console.log(err))
-
 </script>
 
 <template>
@@ -70,15 +63,14 @@ function setStatus(news: News): void{
       Details
     </RouterLink>
 
-  <RouterLink
-    :to="{ name: 'news-comment-view' }"
-    class="flex-1 text-center py-2 rounded-full font-semibold text-gray-700"
-    active-class="bg-white shadow"
-    exact-active-class="bg-white shadow"
-   
-  >
-    {{ commentListStore.commentlist?.length }} Comments
-  </RouterLink>
+    <RouterLink
+      :to="{ name: 'news-comment-view' }"
+      class="flex-1 text-center py-2 rounded-full font-semibold text-gray-700"
+      active-class="bg-white shadow"
+      exact-active-class="bg-white shadow"
+    >
+      {{ commentListStore.commentlist?.length }} Comments
+    </RouterLink>
 
     <RouterLink
       :to="{ name: 'news-vote-view' }"

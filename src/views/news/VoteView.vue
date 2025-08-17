@@ -3,7 +3,8 @@ import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import type { Comment, News } from '@/types'
+import type { Comment } from '@/types'
+import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 const newsStore = useNewsStore()
@@ -12,11 +13,15 @@ const commentStore = useCommentListStore()
 const { commentlist } = storeToRefs(commentStore)
 const vote = ref<number>(0)
 const comment = ref<string>('')
+const posted = ref<boolean>(false)
+const notiString = ref<string>('')
 const dummy = ref(0)
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
 
 function clickBtn() {
+  nProgress.start()
+  posted.value = true
   console.log('Vote:', vote.value)
   if (vote.value == 1) {
     newsStore.updateVerifiedVote()
@@ -25,40 +30,42 @@ function clickBtn() {
     newsStore.updateFakeVote()
     dummy.value += 1
   }
+  notiString.value = ' Your vote has been recorded.'
   if (comment.value) {
     const commentObj: Comment = {
       id: commentlist.value?.length || -99,
       newsId: news.value?.id,
       commenter: 'Anonymous',
-      date: new Date().getDate() + '-' + new Date().getMonth() + '-' + new Date().getFullYear(),
+      date:
+        new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
       comment: comment.value,
     }
     commentlist.value?.push(commentObj)
+    notiString.value = ' Your vote and comment have been recorded.'
   }
+  nProgress.done()
 
   vote.value = 0
   comment.value = ''
-}
-
-function createNewsObject(verifiedVote: number, fakeVote: number): News {
-  const newNews: News = {
-    id: news.value?.id || -99,
-    topic: news.value?.topic || '',
-    fakeVoteCount: fakeVote,
-    verifiedVoteCount: verifiedVote,
-    details: news.value?.details || '',
-    reporter: news.value?.reporter || '',
-    comments: [],
-    image: news.value?.image || '',
-    status: news.value?.status,
-    datetime: news.value?.datetime || new Date(),
-  }
-  return newNews
+  scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  })
+  setTimeout(() => {
+    posted.value = false
+  }, 3000)
 }
 </script>
 
 <template>
   <div class="voting md:w-[80%] w-[95%] mx-auto mt-10">
+    <div
+      id="noti"
+      v-if="posted"
+      class="animate-fade p-3 text-white text-xl font-bold mb-2 text-center"
+    >
+      {{ notiString }}
+    </div>
     <div class="vote-form-card p-4 rounded-md border border-gray-200">
       <div id="header" class="">
         <h2 class="font-semibold mb-3 text-xl">Vote on Article Authenticity</h2>
@@ -66,21 +73,6 @@ function createNewsObject(verifiedVote: number, fakeVote: number): News {
           Help the community by voting whether this news article is authentic or fake.
         </div>
       </div>
-      <!-- <div id="form" class="">
-                <h2>Your assessment on this article</h2>
-                <div id="real">
-               <input type="radio" name="vote-news"><span>This news appears to be authentic</span>
-
-                </div>
-                <div class="fake">
-                    <input type="radio" name="vote-news">
-                    <span>This news appears to be fake or misleading</span>
-                </div>
-                <div class="comment">
-                    <h2>Reason for your assessment (Optional)</h2>
-                    <textarea name="" id=""></textarea>
-                </div>
-            </div> -->
 
       <div id="form" class="bg-white p-6 space-y-5">
         <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
