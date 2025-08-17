@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import NewsCard from '@/components/NewsCard.vue'
+import NewsCardListForm from '@/components/NewsCardListForm.vue'
 import { useNewsListStore } from '@/stores/newslist'
 import { NewsStatus, type News } from '@/types'
 import { storeToRefs } from 'pinia'
@@ -84,30 +85,90 @@ watch(
   },
   { immediate: true },
 )
+
+const view = ref('grid')
+function toggleView() {
+  view.value = view.value === 'grid' ? 'list' : 'grid'
+}
 </script>
 
 <template>
-  <div class="m-4 p-4 text-xl font-semibold">
-    <label for="news-filter">Filter News: </label>
-    <select
-      name="news-filter"
-      id="news-filter"
-      class="text-white bg-black rounded-lg"
-      @change="onFilterChange"
+  <div class="flex flex-row justify-between items-center">
+    <div class="m-4 p-4 text-xl font-semibold">
+      <label for="news-filter">Filter News: </label>
+      <select
+        name="news-filter"
+        id="news-filter"
+        class="text-white bg-black rounded-lg"
+        @change="onFilterChange"
+      >
+        <option value="all" class="font-semibold hover:bg-gray-300 hover:text-black">All</option>
+        <option value="verified" class="font-semibold hover:bg-gray-300 hover:text-black">
+          Verified
+        </option>
+        <option value="fake" class="font-semibold hover:bg-gray-300 hover:text-black">Fake</option>
+        <option value="pending" class="font-semibold hover:bg-gray-300 hover:text-black">
+          Pending
+        </option>
+      </select>
+    </div>
+
+    <div
+      @click="toggleView"
+      class="border-black font-normal border-2 rounded-lg p-1 m-2 flex items-center justify-center w-32 h-16 bg-white shadow-md"
     >
-      <option value="all" class="font-semibold hover:bg-gray-300 hover:text-black">All</option>
-      <option value="verified" class="font-semibold hover:bg-gray-300 hover:text-black">
-        Verified
-      </option>
-      <option value="fake" class="font-semibold hover:bg-gray-300 hover:text-black">Fake</option>
-      <option value="pending" class="font-semibold hover:bg-gray-300 hover:text-black">
-        Pending
-      </option>
-    </select>
+      <div
+        :class="[
+          'flex-1 flex items-center justify-center py-2 cursor-pointer rounded-md',
+          view === 'grid' ? 'bg-black text-white' : 'text-black',
+        ]"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <rect width="18" height="18" x="3" y="3" rx="2" />
+          <path d="M3 9h18" />
+          <path d="M3 15h18" />
+          <path d="M9 3v18" />
+          <path d="M15 3v18" />
+        </svg>
+      </div>
+
+      <div
+        :class="[
+          'flex-1 flex items-center justify-center py-2 cursor-pointer rounded-md',
+          view === 'list' ? 'bg-black text-white' : 'text-black',
+        ]"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="ml-4 w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+          />
+        </svg>
+      </div>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 m-8">
+  <div v-if="view === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 m-8">
     <NewsCard v-for="newsItem in displayList" :key="newsItem.id" :news="newsItem" />
+  </div>
+
+  <div v-else class="flex flex-col justify-center m-8 gap-2">
+    <NewsCardListForm v-for="newsItem in displayList" :key="newsItem.id" :news="newsItem" />
   </div>
 
   <div class="flex flex-row items-center justify-between m-6 ml-14 mr-[40%] font-semibold">
