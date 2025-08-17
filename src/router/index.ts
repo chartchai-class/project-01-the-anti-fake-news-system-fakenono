@@ -21,7 +21,7 @@ const router = createRouter({
         const newsListStore = useNewsListStore()
         return NewsService.getNews()
           .then((response) => {
-            const newsList = response.data
+            const newsList = response.data['news']
             for (const news of newsList) {
               const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
               if (totalVoteCount < 20) {

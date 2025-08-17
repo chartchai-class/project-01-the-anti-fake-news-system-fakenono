@@ -1,7 +1,25 @@
 import axios from 'axios'
 
+// const apiClient = axios.create({
+//   baseURL: 'https://my-json-server.typicode.com/WaiYanMoeLwin/se331-midterm-project-db',
+//   withCredentials: false,
+//   headers: {
+//     Accept: 'application/json',
+//     'Content-Type': 'application/json',
+//   },
+// })
+
+// export default {
+//   getNews() {
+//     return apiClient.get('/news')
+//   },
+//   getNewsById(id: number) {
+//     return apiClient.get(`/news/${id}`)
+//   },
+// }
+
 const apiClient = axios.create({
-  baseURL: 'https://my-json-server.typicode.com/WaiYanMoeLwin/se331-midterm-project-db',
+  baseURL: 'https://waiyanmoelwin.github.io/se331-midterm-project-db',
   withCredentials: false,
   headers: {
     Accept: 'application/json',
@@ -11,9 +29,6 @@ const apiClient = axios.create({
 
 export default {
   getNews() {
-    return apiClient.get('/news')
-  },
-  getNewsById(id: number) {
-    return apiClient.get(`/news/${id}`)
+    return apiClient.get('/db.json')
   },
 }
