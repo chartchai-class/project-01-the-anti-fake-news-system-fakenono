@@ -46,6 +46,20 @@ const displayList = ref(
 )
 
 watch([page, limit], ([newPage, newLimit]) => {
+  if (
+    isNaN(newPage) ||
+    isNaN(newLimit) ||
+    newPage < 1 ||
+    newLimit < 1 ||
+    newPage > totalPages.value
+  ) {
+    router.replace({
+      name: 'not-found-view',
+      query: { resource: 'page' },
+      params: { catchAll: 'pagenotfound' },
+    })
+    return
+  }
   router.push({
     name: 'home',
     query: {
@@ -68,6 +82,7 @@ watch(
       page.value * limit.value,
     )
   },
+  { immediate: true },
 )
 </script>
 
