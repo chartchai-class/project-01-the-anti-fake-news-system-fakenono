@@ -30,7 +30,8 @@ export interface Comment{
   newsId: number,
   commenter: string,
   date: Date,
-  comment:string
+  comment: string
+  imgLink?:string
 }
 
 export interface CommentListState{

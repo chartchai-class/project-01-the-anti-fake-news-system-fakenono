@@ -15,6 +15,7 @@ const vote = ref<number>(0)
 const comment = ref<string>('')
 const posted = ref<boolean>(false)
 const notiString = ref<string>('')
+const imgLink = ref<string>('')
 const dummy = ref(0)
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
@@ -31,14 +32,15 @@ function clickBtn() {
     dummy.value += 1
   }
   notiString.value = ' Your vote has been recorded.'
-  if (comment.value) {
+  if (comment.value || imgLink.value) {
     const commentObj: Comment = {
       id: commentlist.value?.length || -99,
       newsId: news.value?.id,
       commenter: 'Anonymous',
       date:
         new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
-      comment: comment.value,
+      comment: comment.value || '',
+      imgLink: imgLink.value || '',
     }
     commentlist.value?.push(commentObj)
     notiString.value = ' Your vote and comment have been recorded.'
@@ -119,6 +121,12 @@ function clickBtn() {
             placeholder="Share your reasoning..."
             v-model="comment"
           ></textarea>
+          <input
+            type="text"
+            v-model="imgLink"
+            placeholder="Image link (optional)"
+            class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
+          />
         </div>
         <button
           @click="clickBtn"
