@@ -42,7 +42,7 @@ const props = defineProps({
 const page = ref(props.page)
 const limit = ref(props.limit)
 const totalPages = computed(() => Math.ceil((filterList.value?.length || 0) / limit.value))
-const displayList = ref(
+const displayList = computed(() =>
   filterList.value.slice((page.value - 1) * limit.value, page.value * limit.value),
 )
 
@@ -75,13 +75,9 @@ watch(
   (newQuery) => {
     const newPage = parseInt(newQuery.page as string) || 1
     const newLimit = parseInt(newQuery.limit as string) || 6
-    console.log('Query changed:', newQuery)
+
     page.value = newPage
     limit.value = newLimit
-    displayList.value = filterList.value.slice(
-      (page.value - 1) * limit.value,
-      page.value * limit.value,
-    )
   },
   { immediate: true },
 )
@@ -93,6 +89,22 @@ function toggleView() {
 </script>
 
 <template>
+  <RouterLink
+    :to="{ name: 'news-post-view' }"
+    class="bg-black text-white p-4 px-6 rounded-lg m-4 font-bold text-xl flex flex-row items-center justify-between justify-self-end"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="size-6"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+    Post
+  </RouterLink>
   <div class="flex flex-row justify-between items-center">
     <div class="m-4 p-4 text-xl font-semibold">
       <label for="news-filter">Filter News: </label>

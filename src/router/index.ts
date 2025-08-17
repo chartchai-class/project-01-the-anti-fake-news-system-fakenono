@@ -24,6 +24,9 @@ const router = createRouter({
       }),
       beforeEnter: () => {
         const newsListStore = useNewsListStore()
+        if (newsListStore.newslist) {
+          return Promise.resolve()
+        }
         return NewsService.getNews()
           .then((response) => {
             const newsList = response.data['news']
