@@ -17,6 +17,10 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      props: (route) => ({
+        page: route.query.page,
+        limit: route.query.limit,
+      }),
       beforeEnter: () => {
         const newsListStore = useNewsListStore()
         return NewsService.getNews()
