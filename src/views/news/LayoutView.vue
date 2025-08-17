@@ -1,19 +1,42 @@
 <script setup lang="ts">
+import CommentService from '@/services/CommentService';
 import NewsService from '@/services/NewsService';
+import { useCommentListStore } from '@/stores/commentlists';
 import { useNewsStore } from '@/stores/news';
+import { NewsStatus, type News } from '@/types';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 
 const tempId=parseInt((useRoute().params.id).toString())
 const newsStore = useNewsStore();
+const commentListStore=useCommentListStore()
 onMounted(() => {
         NewsService.getNewsById(tempId).then(news => {
             newsStore.setNews(news.data)
+            setStatus(newsStore.news)
             console.log(news.data)
-        }).catch((err)=>console.log(err))
+        }).catch((err) => console.log(err))
+
+  CommentService.getCommentsByNewsId(tempId).then(comments => {
+    commentListStore.setCommentList(comments)
+          console.log("StoreData:",commentListStore.commentlist)
+        })
   
 })
+
+function setStatus(news: News): void{
+    const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
+              if (totalVoteCount < 20) {
+                news.status = NewsStatus.Pending
+              } else if (news.verifiedVoteCount / totalVoteCount < 0.6) {
+                news.status = NewsStatus.Fake
+              } else {
+                news.status = NewsStatus.Verified
+              }
+}
+
+
 
 
 </script>
@@ -47,7 +70,7 @@ onMounted(() => {
     exact-active-class="bg-white shadow"
    
   >
-    Comments
+    {{ commentListStore.commentlist?.length }} Comments
   </RouterLink>
 
   <RouterLink
