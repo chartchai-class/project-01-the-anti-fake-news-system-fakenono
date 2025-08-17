@@ -6,6 +6,7 @@ import CommentsView from '@/views/news/CommentsView.vue'
 import DetailsView from '@/views/news/DetailsView.vue'
 import LayoutView from '@/views/news/LayoutView.vue'
 import VoteView from '@/views/news/VoteView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 import PostView from '@/views/PostView.vue'
 import nProgress from 'nprogress'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -17,6 +18,10 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      props: (route) => ({
+        page: route.query.page,
+        limit: route.query.limit,
+      }),
       beforeEnter: () => {
         const newsListStore = useNewsListStore()
         return NewsService.getNews()
@@ -67,6 +72,11 @@ const router = createRouter({
       path: '/post',
       name: 'news-post-view',
       component: PostView,
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'not-found-view',
+      component: NotFoundView,
     },
   ],
 })
