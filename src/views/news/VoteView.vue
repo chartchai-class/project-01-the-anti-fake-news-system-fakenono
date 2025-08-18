@@ -172,5 +172,29 @@ function clickBtn() {
         </div>
       </div>
     </div>
+    <div class="vote-rules mt-4 p-4 border border-gray-200 rounded-md">
+      <h2 class="font-semibold text-xl mb-2">Decision Rules for News Status</h2>
+      <ul class="list-disc pl-5">
+        <li class="mb-2">
+          If the real votes are more than 60% of total votes, the news is marked as
+          <strong class="bg-green-600 text-white border rounded-lg px-2 font-semibold mx-2"
+            >Verified</strong
+          >.
+        </li>
+        <li class="mb-2">
+          If the fake votes are more than 60% of total votes, the news is marked as
+          <strong class="bg-red-600 text-white border rounded-lg px-2 font-semibold mx-2"
+            >Fake</strong
+          >.
+        </li>
+        <li class="mb-2">
+          If total votes are less than 20, the news is marked as
+          <strong class="bg-gray-600 text-white border rounded-lg px-2 font-semibold mx-2"
+            >Pending</strong
+          >
+          state.
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
