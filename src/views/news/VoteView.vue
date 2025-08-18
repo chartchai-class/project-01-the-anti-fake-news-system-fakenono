@@ -49,6 +49,7 @@ function clickBtn() {
 
   vote.value = 0
   comment.value = ''
+  imgLink.value = ''
   scrollTo({
     top: 0,
     behavior: 'smooth',
