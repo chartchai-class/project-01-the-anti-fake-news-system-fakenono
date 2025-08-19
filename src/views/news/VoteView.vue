@@ -3,6 +3,7 @@ import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
+import { useVoteStore } from '@/stores/votesTrackList'
 import type { Comment } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
@@ -11,6 +12,9 @@ const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
 const commentStore = useCommentListStore()
 const { commentlist } = storeToRefs(commentStore)
+const votetrackStore = useVoteStore()
+const { votedNews } = storeToRefs(votetrackStore)
+const allowMoreVotes = ref<boolean>(false)
 const vote = ref<number>(0)
 const comment = ref<string>('')
 const posted = ref<boolean>(false)
@@ -19,6 +23,12 @@ const imgLink = ref<string>('')
 const dummy = ref(0)
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
+const btnDisable = computed(() => {
+  if (!allowMoreVotes.value && votetrackStore.hasVoted(news.value?.id)) {
+    return true
+  }
+  return false
+})
 
 function clickBtn() {
   nProgress.start()
@@ -49,6 +59,8 @@ function clickBtn() {
 
   vote.value = 0
   comment.value = ''
+  imgLink.value = ''
+  votetrackStore.markVoted(news.value?.id)
   scrollTo({
     top: 0,
     behavior: 'smooth',
@@ -130,17 +142,20 @@ function clickBtn() {
         </div>
         <button
           @click="clickBtn"
-          class="w-[10%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
+          :disabled="btnDisable"
+          class="md:w-[10%] w-[30%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
+          :class="{ 'opacity-50 cursor-not-allowed hover:cursor-not-allowed': btnDisable }"
         >
           Submit
         </button>
+        <div v-if="btnDisable">You have already submitted a vote for this article.</div>
       </div>
     </div>
 
     <div
       class="vote-stat p-5 mt-4 rounded-md border border-gray-200 flex justify-between flex-wrap"
     >
-      <div id="stat" class="md:w-[50%] w-[80%] px-10">
+      <div id="stat" class="md:w-[50%] w-[80%] md:px-10">
         <h2 class="font-semibold text-xl mb-5">Current Stats</h2>
         <div id="realCount" class="flex gap-10 mb-4">
           <span>Real Votes:</span>
@@ -153,7 +168,9 @@ function clickBtn() {
         <div id="status" class="flex gap-10 mb-4">
           <span>Status:</span>
           <div id="status" class="flex-1" v-if="news?.status == 1">
-            <div class="bg-green-600 rounded-md w-[25%] text-center text-white">Verified</div>
+            <div class="bg-green-600 rounded-md md:w-[25%] w-[50%] text-center text-white">
+              Verified
+            </div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 0">
             <div class="bg-red-600 rounded-md w-[25%] text-center text-white">Fake</div>
@@ -170,6 +187,44 @@ function clickBtn() {
           <PercentBar :realVote="realVotes" :fakeVote="fakeVotes" />
         </div>
       </div>
+    </div>
+    <div class="vote-rules mt-4 p-4 border border-gray-200 rounded-md">
+      <h2 class="font-semibold text-xl mb-2">Decision Rules for News Status</h2>
+      <ul class="list-disc pl-5">
+        <li class="mb-2">
+          If the real votes are more than 60% of total votes, the news is marked as
+          <strong class="bg-green-600 text-white border rounded-lg px-2 font-semibold mx-2"
+            >Verified</strong
+          >.
+        </li>
+        <li class="mb-2">
+          If the fake votes are more than 60% of total votes, the news is marked as
+          <strong class="bg-red-600 text-white border rounded-lg px-2 font-semibold mx-2"
+            >Fake</strong
+          >.
+        </li>
+        <li class="mb-2">
+          If total votes are less than 20, the news is marked as
+          <strong class="bg-gray-600 text-white border rounded-lg px-2 font-semibold mx-2"
+            >Pending</strong
+          >
+          state.
+        </li>
+        <li class="font-semibold text-red-700">
+          User can vote only once per article. <br />For testing purpose, you can enabled test
+          feature which will allow you to vote multiple times.
+          <br />
+          <!-- Toggle button -->
+          <label class="inline-flex items-center mt-3">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-600"
+              v-model="allowMoreVotes"
+            />
+            <span class="ml-2 text-gray-700">Enable Test Feature</span>
+          </label>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
