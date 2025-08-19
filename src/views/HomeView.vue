@@ -10,22 +10,6 @@ import { useRoute, useRouter } from 'vue-router'
 const store = useNewsListStore()
 const { newslist } = storeToRefs(store)
 
-const filterList = ref<News[]>(newslist.value || [])
-
-function onFilterChange(event: Event) {
-  const selectElement = event.target as HTMLSelectElement
-  const filterValue = selectElement.value
-  if (filterValue === 'all') {
-    filterList.value = newslist.value || []
-  } else if (filterValue === 'verified') {
-    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Verified) || []
-  } else if (filterValue === 'fake') {
-    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Fake) || []
-  } else if (filterValue === 'pending') {
-    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Pending) || []
-  }
-}
-
 const route = useRoute()
 const router = useRouter()
 const props = defineProps({
@@ -42,9 +26,33 @@ const props = defineProps({
 const page = ref(props.page)
 const limit = ref(props.limit)
 const totalPages = computed(() => Math.ceil((filterList.value?.length || 0) / limit.value))
+
+const filterList = ref<News[]>(newslist.value || [])
+
+function onFilterChange(event: Event) {
+  const selectElement = event.target as HTMLSelectElement
+  const filterValue = selectElement.value
+  if (filterValue === 'all') {
+    filterList.value = newslist.value || []
+  } else if (filterValue === 'verified') {
+    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Verified) || []
+  } else if (filterValue === 'fake') {
+    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Fake) || []
+  } else if (filterValue === 'pending') {
+    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Pending) || []
+  }
+  page.value = 1 // Reset to first page when filter changes
+}
+
 const displayList = computed(() =>
   filterList.value.slice((page.value - 1) * limit.value, page.value * limit.value),
 )
+
+function onLimitChange(event: Event) {
+  const selectElement = event.target as HTMLSelectElement
+  page.value = 1 // Reset to first page when limit changes
+  limit.value = parseInt(selectElement.value, 10)
+}
 
 watch([page, limit], ([newPage, newLimit]) => {
   if (
@@ -89,24 +97,26 @@ function toggleView() {
 </script>
 
 <template>
-  <RouterLink
-    :to="{ name: 'news-post-view' }"
-    class="bg-black text-white p-4 px-6 rounded-lg m-4 font-bold text-xl flex flex-row items-center justify-between justify-self-end"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="1.5"
-      stroke="currentColor"
-      class="size-6"
+  <div class="flex justify-end">
+    <RouterLink
+      :to="{ name: 'news-post-view' }"
+      class="bg-black text-white p-2 px-3 rounded-lg m-2 font-bold text-xl flex flex-row justify-self-end"
     >
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-    Post
-  </RouterLink>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="size-6"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Post
+    </RouterLink>
+  </div>
   <div class="flex flex-row justify-between items-center">
-    <div class="m-4 p-4 text-xl font-semibold">
+    <div class="m-4 px-4 py-2 text-xl font-semibold">
       <label for="news-filter">Filter News: </label>
       <select
         name="news-filter"
@@ -127,7 +137,7 @@ function toggleView() {
 
     <div
       @click="toggleView"
-      class="border-black font-normal border-2 rounded-lg p-1 m-2 flex items-center justify-center w-32 h-16 bg-white shadow-md"
+      class="border-black font-normal border-2 rounded-lg p-1 m-2 flex items-center justify-center w-32 h-12 bg-white shadow-md"
     >
       <div
         :class="[
@@ -159,7 +169,7 @@ function toggleView() {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="ml-4 w-6 h-6"
+          class="w-6 h-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -179,31 +189,35 @@ function toggleView() {
     <NewsCard v-for="newsItem in displayList" :key="newsItem.id" :news="newsItem" />
   </div>
 
-  <div v-else class="flex flex-col justify-center m-8 gap-2">
+  <div v-else class="flex flex-col justify-center m-2 md:m-8 gap-2">
     <NewsCardListForm v-for="newsItem in displayList" :key="newsItem.id" :news="newsItem" />
   </div>
 
-  <div class="flex flex-row items-center justify-between m-6 ml-14 mr-[40%] font-semibold">
-    <div>
+  <div class="flex md:flex-row flex-col items-center justify-start m-6 ml-14 font-semibold">
+    <div class="text-sm md:text-base m-3">
       <label for="page-limit">Show </label>
-      <select id="page-limit" class="ml-2 bg-black text-white py-2 rounded-lg" v-model="limit">
+      <select
+        id="page-limit"
+        class="ml-2 bg-black text-white py-2 rounded-lg"
+        @change="onLimitChange"
+      >
         <option value="6">6</option>
         <option value="12">12</option>
-        <option value="24">24</option>
+        <option value="18">18</option>
       </select>
       <label for="page-limit"> News Per Page</label>
     </div>
-    <div class="flex items-center">
+    <div class="flex items-center m-3 md:ml-[14rem]">
       <RouterLink
-        class="text-decoration-none bg-black px-4 py-2 rounded-lg hover:bg-gray-600 text-white"
+        class="text-xs md:text-basetext-decoration-none bg-black px-4 py-2 rounded-lg hover:bg-gray-600 text-white"
         :to="{ query: { page: page - 1, limit: limit } }"
         v-if="page > 1"
         rel="prev"
         >Previous</RouterLink
       >
-      <span class="mx-2">Page {{ page }} of {{ totalPages }}</span>
+      <span class="text-xs md:text-base mx-2">Page {{ page }} of {{ totalPages }}</span>
       <RouterLink
-        class="text-decoration-none bg-black px-4 py-2 rounded-lg hover:bg-gray-600 text-white"
+        class="text-xs md:text-base text-decoration-none bg-black px-4 py-2 rounded-lg hover:bg-gray-600 text-white"
         :to="{ query: { page: parseInt(page as string) + 1, limit: limit } }"
         v-if="page < totalPages"
         rel="next"
