@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useNewsStore } from '@/stores/news'
 import { storeToRefs } from 'pinia'
+import { NewsStatus } from '@/types'
 
 interface News {
   id: number
@@ -44,23 +45,36 @@ function formatDate(datetime: string): string {
 </script>
 
 <template>
-  <div v-if="news" class="space-y-4">
+  <div v-if="news" class="space-y-6 px-6 py-8 max-w-7xl mx-auto">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">{{ news.topic }}</h1>
-      <span
-        v-if="news.verifiedVoteCount > news.fakeVoteCount"
-        class="bg-green-600 text-white px-3 py-1 rounded text-sm"
-        >VERIFIED</span
-      >
+      <h1 class="text-3xl font-extrabold text-gray-900">{{ news.topic }}</h1>
+
+      <span v-if="news.verifiedVoteCount > news.fakeVoteCount"
+        class="bg-green-600 text-white px-3 py-1 rounded text-sm">VERIFIED</span>
     </div>
 
     <p class="text-gray-600">📝 {{ news.reporter }} — {{ formatDate(news.datetime) }}</p>
 
-    <img :src="news.image" alt="News Image" class="rounded-lg w-full object-cover max-h-[400px]" />
+    <img :src="news.image" alt="News Image" class="rounded-xl w-full object-cover max-h-[400px] shadow-md" />
 
-    <p class="text-lg">{{ news.details }}</p>
+    <p class="text-lg leading-relaxed indent-8 text-justify text-gray-800">
+      {{ news.details }}
+    </p>
 
-    <div class="grid grid-cols-3 gap-4 mt-6 text-center">
+
+    <div class="flex justify-center mt-8">
+      <div class="grid grid-cols-2 gap-6 w-full max-w-xl">
+        <div class="bg-white rounded-xl p-6 text-center">
+          <p class="text-gray-500 mb-2">Real Votes</p>
+          <p class="text-2xl font-bold text-green-600">{{ news.verifiedVoteCount }}</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 text-center">
+          <p class="text-gray-500 mb-2">Fake Votes</p>
+          <p class="text-2xl font-bold text-red-600">{{ news.fakeVoteCount }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="grid grid-cols-3 gap-4 mt-6 text-center">
       <div>
         <p class="text-gray-500">Real Votes</p>
         <p class="text-xl font-semibold text-green-600">{{ news.verifiedVoteCount }}</p>
@@ -68,12 +82,12 @@ function formatDate(datetime: string): string {
       <div>
         <p class="text-gray-500">Fake Votes</p>
         <p class="text-xl font-semibold text-red-600">{{ news.fakeVoteCount }}</p>
-      </div>
-      <!-- <div>
+      </div> -->
+    <!-- <div>
         <p class="text-gray-500">Comments</p>
         <p class="text-xl font-semibold text-blue-600">{{ news.comments.length }}</p>
       </div> -->
-    </div>
+    <!-- </div> -->
 
     <!-- <div class="mt-6">
       <h2 class="text-lg font-semibold mb-2">💬 View Comments ({{ news.comments.length }})</h2>
@@ -83,5 +97,6 @@ function formatDate(datetime: string): string {
     </div> -->
   </div>
 
-  <div v-else class="text-center text-gray-500">Loading news...</div>
+  <div v-else class="text-center text-gray-500 py-10">Loading news...</div>
+
 </template>
