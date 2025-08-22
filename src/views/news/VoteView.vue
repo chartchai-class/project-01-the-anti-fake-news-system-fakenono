@@ -173,10 +173,12 @@ function clickBtn() {
             </div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 0">
-            <div class="bg-red-600 rounded-md w-[25%] text-center text-white">Fake</div>
+            <div class="bg-red-600 rounded-md w-[50%] sm:w-[35%] text-center text-white">Fake</div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 2">
-            <div class="bg-gray-600 rounded-md w-[25%] text-center text-white">Pending</div>
+            <div class="bg-gray-600 rounded-md text-center text-white w-[50%] sm:w-[35%]">
+              Pending
+            </div>
           </div>
         </div>
       </div>
