@@ -143,7 +143,7 @@ function clickBtn() {
         <button
           @click="clickBtn"
           :disabled="btnDisable"
-          class="md:w-[10%] w-[30%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
+          class="md:w-[10%] w-[40%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
           :class="{ 'opacity-50 cursor-not-allowed hover:cursor-not-allowed': btnDisable }"
         >
           Submit
@@ -173,10 +173,12 @@ function clickBtn() {
             </div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 0">
-            <div class="bg-red-600 rounded-md w-[25%] text-center text-white">Fake</div>
+            <div class="bg-red-600 rounded-md w-[50%] sm:w-[35%] text-center text-white">Fake</div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 2">
-            <div class="bg-gray-600 rounded-md w-[25%] text-center text-white">Pending</div>
+            <div class="bg-gray-600 rounded-md text-center text-white w-[50%] sm:w-[35%]">
+              Pending
+            </div>
           </div>
         </div>
       </div>

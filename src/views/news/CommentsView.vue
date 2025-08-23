@@ -45,26 +45,20 @@ function decrease() {
       <div class="desc text-gray-600">
         Discussion about <span class="font-bold"> "{{ news?.topic }}"</span>
       </div>
-      <div class="flex flex-wrap justify-between mt-2">
-        <div id="upvoke " class="text-green-600 flex-1">
-          {{ news?.verifiedVoteCount }} real votes
+      <div class="flex flex-wrap gap-4 mt-2">
+        <div id="upvoke " class="text-green-600">{{ news?.verifiedVoteCount }} real votes</div>
+        <div id="downvoke" class="text-red-600">{{ news?.fakeVoteCount }} fake votes</div>
+        <div id="status" class="px-2" v-if="news?.status == 1">
+          <div class="bg-green-600 rounded-md text-center text-white">Verified</div>
         </div>
-        <div id="downvoke" class="text-red-600 flex-1">{{ news?.fakeVoteCount }} fake votes</div>
-        <div id="status" class="flex-1" v-if="news?.status == 1">
-          <div class="bg-green-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">
-            Verified
-          </div>
+        <div id="status" class="px-2" v-if="news?.status == 0">
+          <div class="bg-red-600 rounded-md text-center text-white">Fake</div>
         </div>
-        <div id="status" class="flex-1" v-if="news?.status == 0">
-          <div class="bg-red-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">Fake</div>
-        </div>
-        <div id="status" class="flex-1" v-if="news?.status == 2">
-          <div class="bg-gray-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">
-            Pending
-          </div>
+        <div id="status" class="px-2" v-if="news?.status == 2">
+          <div class="bg-gray-600 rounded-md text-center text-white">Pending</div>
         </div>
 
-        <div id="commentCount" class="flex-1">{{ commentlist?.length }} comments</div>
+        <div id="commentCount" class="">{{ commentlist?.length }} comments</div>
       </div>
     </div>
     <div id="cmt-list" v-if="news">
