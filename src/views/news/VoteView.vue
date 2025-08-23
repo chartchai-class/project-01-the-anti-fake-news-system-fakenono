@@ -143,7 +143,7 @@ function clickBtn() {
         <button
           @click="clickBtn"
           :disabled="btnDisable"
-          class="md:w-[10%] w-[30%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
+          class="md:w-[10%] w-[40%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
           :class="{ 'opacity-50 cursor-not-allowed hover:cursor-not-allowed': btnDisable }"
         >
           Submit

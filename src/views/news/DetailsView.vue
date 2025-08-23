@@ -48,7 +48,7 @@ function formatDate(datetime: string): string {
     <div class="flex flex-wrap gap-1 justify-between items-center">
       <h1 class="text-3xl font-extrabold text-gray-900">{{ news.topic }}</h1>
       <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 1">
-        <div class="bg-green-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">
+        <div class="bg-green-600 rounded-md lg:w-[25%] w-[70%] text-center text-white">
           Verified
         </div>
       </div>
@@ -56,7 +56,7 @@ function formatDate(datetime: string): string {
         <div class="bg-red-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">Fake</div>
       </div>
       <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 2">
-        <div class="bg-gray-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">Pending</div>
+        <div class="bg-gray-600 rounded-md lg:w-[25%] w-[80%] text-center text-white">Pending</div>
       </div>
     </div>
 
