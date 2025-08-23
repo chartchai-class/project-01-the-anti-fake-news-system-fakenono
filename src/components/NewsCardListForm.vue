@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <RouterLink :to="`/news/${news.id}`" class="flex justify-center">
     <div
-      class="border-[2px] flex flex-row p-4 m-2 w-[95%] sm:w-[97%] h-[12rem] rounded-lg shadow hover:shadow-lg transition-shadow hover:scale-[1.01]"
+      class="border-[2px] flex flex-row p-4 m-2 w-[97%] md:w-[95%] rounded-lg shadow hover:shadow-lg transition-shadow hover:scale-[1.01]"
     >
       <div class="w-[30%] h-[10rem] p-2">
         <img

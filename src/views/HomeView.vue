@@ -116,7 +116,7 @@ function toggleView() {
     </RouterLink>
   </div>
   <div class="flex flex-row justify-between items-center">
-    <div class="m-4 px-4 py-2 text-xl font-semibold">
+    <div class="m-4 px-4 py-2 text-lg md:text-xl font-semibold">
       <label for="news-filter">Filter News: </label>
       <select
         name="news-filter"
@@ -137,17 +137,17 @@ function toggleView() {
 
     <div
       @click="toggleView"
-      class="border-black font-normal border-2 rounded-lg p-1 m-2 flex items-center justify-center w-32 h-12 bg-white shadow-md"
+      class="border-black font-normal border-2 rounded-lg p-1 m-2 flex items-center justify-center w-18 h-10 bg-white shadow-md"
     >
       <div
         :class="[
-          'flex-1 flex items-center justify-center py-2 cursor-pointer rounded-md',
+          'flex-1 flex items-center justify-center p-1 cursor-pointer rounded-md',
           view === 'grid' ? 'bg-black text-white' : 'text-black',
         ]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="w-6 h-6"
+          class="w-5 h-5"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -163,13 +163,13 @@ function toggleView() {
 
       <div
         :class="[
-          'flex-1 flex items-center justify-center py-2 cursor-pointer rounded-md',
+          'flex-1 flex items-center justify-center p-1 cursor-pointer rounded-md',
           view === 'list' ? 'bg-black text-white' : 'text-black',
         ]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="w-6 h-6"
+          class="w-5 h-5"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
