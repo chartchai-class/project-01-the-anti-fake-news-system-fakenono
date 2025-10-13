@@ -14,15 +14,17 @@ const newslistStore = useNewsListStore()
 const { newslist } = storeToRefs(newslistStore)
 const news = ref(null)
 const commentListStore = useCommentListStore()
+const totalCommentCount = ref(0)
 onMounted(() => {
+  // Need to change , when news part is finished
   news.value = newslist.value.find((item) => item.id === tempId) || null
   newsStore.setNews(news.value)
   watchEffect(() => {
     setStatus(news.value)
   })
 
-  CommentService.getCommentsByNewsId(tempId).then((comments) => {
-    commentListStore.setCommentList(comments)
+  CommentService.getCommentsByNewsId(tempId, 6, 1).then((comments) => {
+    totalCommentCount.value = comments.headers['x-total-count']
     console.log('StoreData:', commentListStore.commentlist)
   })
 })
@@ -69,7 +71,7 @@ function setStatus(news: News): void {
       active-class="bg-white shadow"
       exact-active-class="bg-white shadow"
     >
-      {{ commentListStore.commentlist?.length }} Comments
+      {{ totalCommentCount }} Comments
     </RouterLink>
 
     <RouterLink
