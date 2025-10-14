@@ -23,10 +23,13 @@ const imgLink = ref<string>('')
 const dummy = ref(0)
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
+
+// To fix this for new backend , I need to get userId , if the user id is already commented/voted to this newsId, disabled, also is not logged in , disabled
+// else , enabled
 const btnDisable = computed(() => {
-  if (!allowMoreVotes.value && votetrackStore.hasVoted(news.value?.id)) {
-    return true
-  }
+  // if (!allowMoreVotes.value && votetrackStore.hasVoted(news.value?.id)) {
+  //   return true
+  // }
   return false
 })
 

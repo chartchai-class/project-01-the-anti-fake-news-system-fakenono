@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import CommentService from '@/services/CommentService'
-import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { useNewsListStore } from '@/stores/newslist'
 import { NewsStatus, type News } from '@/types'
@@ -13,7 +12,6 @@ const newsStore = useNewsStore()
 const newslistStore = useNewsListStore()
 const { newslist } = storeToRefs(newslistStore)
 const news = ref(null)
-const commentListStore = useCommentListStore()
 const totalCommentCount = ref(0)
 onMounted(() => {
   // Need to change , when news part is finished
@@ -25,7 +23,6 @@ onMounted(() => {
 
   CommentService.getCommentsByNewsId(tempId, 6, 1).then((comments) => {
     totalCommentCount.value = comments.headers['x-total-count']
-    console.log('StoreData:', commentListStore.commentlist)
   })
 })
 
