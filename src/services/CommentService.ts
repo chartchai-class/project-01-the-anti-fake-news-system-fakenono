@@ -1,7 +1,7 @@
 import axios from 'axios'
-
+const BASE_URL = 'http://localhost:8080'
 const apiClient = axios.create({
-  baseURL: 'https://phonemyatko-cmu.github.io/mock-news-db',
+  baseURL: BASE_URL,
   withCredentials: false,
   headers: {
     Accept: 'application/json',
@@ -12,20 +12,11 @@ const apiClient = axios.create({
 export default {
   getComments() {
     return apiClient.get('/db.json')
-    }
-    ,
-    getCommentsByNewsId(id: number) {
-        
-       return this.getComments().then(comments => {
-            
-            return comments.data.filter((comment) => comment.newsId == id)
-
-       }).catch(err => {
-           console.log(err)
-           return []
-        }
-        )
-      
-    }
+  },
+  getCommentsByNewsId(id: number, perPage: number, page: number) {
+    return apiClient.get('/comments-by-news-id/' + id + '?limit=' + perPage + '&page=' + page)
+  },
+  getNewsById(id: number) {
+    return apiClient.get('/news/' + id)
+  },
 }
-

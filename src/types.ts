@@ -37,3 +37,15 @@ export interface Comment {
 export interface CommentListState {
   commentlist: Comment[] | null
 }
+
+export interface Vote {
+  id?: number
+  voteType: VoteType
+  voteReason?: string
+  createdAt?: Date
+}
+
+export enum VoteType {
+  Fake = 1,
+  Real = 0,
+}

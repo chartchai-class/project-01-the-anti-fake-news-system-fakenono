@@ -1,42 +1,43 @@
 <script setup lang="ts">
 import CommentService from '@/services/CommentService'
-import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import { useNewsListStore } from '@/stores/newslist'
-import { NewsStatus, type News } from '@/types'
-import { storeToRefs } from 'pinia'
-import { onMounted, ref, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const tempId = parseInt(useRoute().params.id.toString())
-const newsStore = useNewsStore()
-const newslistStore = useNewsListStore()
-const { newslist } = storeToRefs(newslistStore)
-const news = ref(null)
-const commentListStore = useCommentListStore()
-onMounted(() => {
-  news.value = newslist.value.find((item) => item.id === tempId) || null
-  newsStore.setNews(news.value)
-  watchEffect(() => {
-    setStatus(news.value)
-  })
+const router = useRouter()
+const totalCommentCount = computed(() => {
+  return useNewStore.news?.comments.length
+})
+const useNewStore = useNewsStore()
 
-  CommentService.getCommentsByNewsId(tempId).then((comments) => {
-    commentListStore.setCommentList(comments)
-    console.log('StoreData:', commentListStore.commentlist)
+onMounted(() => {
+  // Need to change , when news part is finished
+  // news.value = newslist.value.find((item) => item.id === tempId) || null
+  // newsStore.setNews(news.value)
+  watchEffect(() => {
+    console.log('News ID:', tempId)
+    CommentService.getNewsById(tempId)
+      .then((response) => {
+        useNewStore.setNews(response.data)
+        // setStatus(useNewStore.news)
+        console.log(useNewStore.news)
+      })
+      .catch((err) => {
+        console.log(err)
+        router.push({ name: '404-resource-view', params: { resource: 'News' } })
+      })
   })
+  // CommentService.getCommentsByNewsId(tempId, 6, 1).then((comments) => {
+  //   totalCommentCount.value = comments.headers['x-total-count']
+  // })
 })
 
-function setStatus(news: News): void {
-  const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
-  if (totalVoteCount < 20) {
-    news.status = NewsStatus.Pending
-  } else if (news.verifiedVoteCount / totalVoteCount < 0.6) {
-    news.status = NewsStatus.Fake
-  } else {
-    news.status = NewsStatus.Verified
-  }
-}
+// function setStatus(news: News): void {
+//   if (news.status == "Pending")
+//     news.status = NewsStatus.Pending
+//   else if(news.status=="")
+// }
 </script>
 
 <template>
@@ -69,7 +70,7 @@ function setStatus(news: News): void {
       active-class="bg-white shadow"
       exact-active-class="bg-white shadow"
     >
-      {{ commentListStore.commentlist?.length }} Comments
+      {{ totalCommentCount }} Comments
     </RouterLink>
 
     <RouterLink

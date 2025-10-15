@@ -1,73 +1,91 @@
 <script setup lang="ts">
 import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
+import CommentService from '@/services/CommentService'
+import VoteCommentService from '@/services/VoteCommentService'
 import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import { useVoteStore } from '@/stores/votesTrackList'
-import type { Comment } from '@/types'
+import { VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
+
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
 const commentStore = useCommentListStore()
-const { commentlist } = storeToRefs(commentStore)
-const votetrackStore = useVoteStore()
-const { votedNews } = storeToRefs(votetrackStore)
-const allowMoreVotes = ref<boolean>(false)
-const vote = ref<number>(0)
+storeToRefs(commentStore)
+//storeToRefs(votetrackStore)
+const voteType = ref<number>(0)
 const comment = ref<string>('')
 const posted = ref<boolean>(false)
 const notiString = ref<string>('')
 const imgLink = ref<string>('')
-const dummy = ref(0)
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
+const voteToPost = ref<Vote>({ voteType: VoteType.Fake })
+const commentToPost = ref<Comment>({ comment: '' })
+const props = defineProps<{ id: number }>()
+
+// If comment is empty , not allowed to vote
 const btnDisable = computed(() => {
-  if (!allowMoreVotes.value && votetrackStore.hasVoted(news.value?.id)) {
+  if (comment.value.trim() == '') {
     return true
   }
   return false
 })
 
+/**
+ * Should add function to check whether user is reader or unknown
+ * If reader , check whether he/she already has voted on this news
+ * If voted , shown Something instead of vote form
+ */
+
 function clickBtn() {
   nProgress.start()
   posted.value = true
-  console.log('Vote:', vote.value)
-  if (vote.value == 1) {
-    newsStore.updateVerifiedVote()
-    dummy.value += 1
+  console.log('Vote:', voteType.value)
+  if (voteType.value == 0) {
+    voteToPost.value.voteType = VoteType.Real
   } else {
-    newsStore.updateFakeVote()
-    dummy.value += 1
+    voteToPost.value.voteType = VoteType.Fake
   }
-  notiString.value = ' Your vote has been recorded.'
-  if (comment.value || imgLink.value) {
-    const commentObj: Comment = {
-      id: commentlist.value?.length || -99,
-      newsId: news.value?.id,
-      commenter: 'Anonymous',
-      date:
-        new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
-      comment: comment.value || '',
-      imgLink: imgLink.value || '',
-    }
-    commentlist.value?.push(commentObj)
-    notiString.value = ' Your vote and comment have been recorded.'
-  }
-  nProgress.done()
+  console.log('VoteType:', voteToPost.value.voteType)
+  commentToPost.value.comment = comment.value
 
-  vote.value = 0
-  comment.value = ''
-  imgLink.value = ''
-  votetrackStore.markVoted(news.value?.id)
-  scrollTo({
-    top: 0,
-    behavior: 'smooth',
-  })
-  setTimeout(() => {
-    posted.value = false
-  }, 3000)
+  if (commentToPost.value.comment == '') {
+    console.log('Comment not filled!')
+    nProgress.done()
+    notiString.value = 'Add Comment'
+    setTimeout(() => {
+      posted.value = false
+    }, 3000)
+    return
+  }
+
+  // news id received from props from layoutview, in router
+  const tempNewsId = props.id
+  console.log('Posted Comment:', comment.value)
+  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, tempNewsId).then(
+    (response) => {
+      console.log(response.status, 'Post Done')
+      notiString.value = ' Your vote has been recorded.'
+      CommentService.getNewsById(tempNewsId).then((response) => {
+        newsStore.setNews(response.data)
+      })
+      nProgress.done()
+
+      voteType.value = 0
+      comment.value = ''
+      imgLink.value = ''
+      scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
+      setTimeout(() => {
+        posted.value = false
+      }, 3000)
+    },
+  )
 }
 </script>
 
@@ -99,8 +117,8 @@ function clickBtn() {
             type="radio"
             name="vote-news"
             class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-            value="1"
-            v-model="vote"
+            value="0"
+            v-model="voteType"
           />
           <Thumb :is-up="true" />
 
@@ -115,8 +133,8 @@ function clickBtn() {
             type="radio"
             name="vote-news"
             class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-            value="0"
-            v-model="vote"
+            value="1"
+            v-model="voteType"
           />
           <Thumb :is-up="false" />
           <span class="text-gray-700">This news appears to be fake or misleading</span>
@@ -124,14 +142,15 @@ function clickBtn() {
 
         <!-- Comment box -->
         <div class="space-y-2">
-          <h2 class="text-lg font-semibold text-gray-900">
-            Reason for your assessment <span class="text-gray-500 text-sm">(Optional)</span>
-          </h2>
+          <h2 class="text-lg font-semibold text-gray-900">Reason for your assessment</h2>
+          <div v-if="comment.trim() == ''" class="text-red-500">This field is required</div>
+
           <textarea
             rows="4"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
             placeholder="Share your reasoning..."
             v-model="comment"
+            required
           ></textarea>
           <input
             type="text"
@@ -148,7 +167,7 @@ function clickBtn() {
         >
           Submit
         </button>
-        <div v-if="btnDisable">You have already submitted a vote for this article.</div>
+        <!-- <div v-if="btnDisable">Please Fill Al</div> -->
       </div>
     </div>
 
@@ -167,15 +186,15 @@ function clickBtn() {
         </div>
         <div id="status" class="flex gap-10 mb-4">
           <span>Status:</span>
-          <div id="status" class="flex-1" v-if="news?.status == 1">
+          <div id="status" class="flex-1" v-if="news?.status == 'Verified'">
             <div class="bg-green-600 rounded-md md:w-[25%] w-[50%] text-center text-white">
               Verified
             </div>
           </div>
-          <div id="status" class="flex-1" v-if="news?.status == 0">
+          <div id="status" class="flex-1" v-if="news?.status == 'Fake'">
             <div class="bg-red-600 rounded-md w-[50%] sm:w-[35%] text-center text-white">Fake</div>
           </div>
-          <div id="status" class="flex-1" v-if="news?.status == 2">
+          <div id="status" class="flex-1" v-if="news?.status == 'Pending'">
             <div class="bg-gray-600 rounded-md text-center text-white w-[50%] sm:w-[35%]">
               Pending
             </div>
@@ -212,20 +231,7 @@ function clickBtn() {
           >
           state.
         </li>
-        <li class="font-semibold text-red-700">
-          User can vote only once per article. <br />For testing purpose, you can enabled test
-          feature which will allow you to vote multiple times.
-          <br />
-          <!-- Toggle button -->
-          <label class="inline-flex items-center mt-3">
-            <input
-              type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-600"
-              v-model="allowMoreVotes"
-            />
-            <span class="ml-2 text-gray-700">Enable Test Feature</span>
-          </label>
-        </li>
+        <li class="font-semibold text-red-700">User can vote only once per article.</li>
       </ul>
     </div>
   </div>

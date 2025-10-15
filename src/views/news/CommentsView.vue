@@ -1,19 +1,35 @@
 <script setup lang="ts">
+import CommentService from '@/services/CommentService'
 import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
 const commentListStore = useCommentListStore()
 const { commentlist } = storeToRefs(commentListStore)
+const totalCommentCount = ref(0)
 const perPage = ref(6)
 const pages = computed(() => {
-  return Math.ceil((commentlist.value?.length ?? 0) / perPage.value)
+  return Math.ceil((totalCommentCount.value ?? 0) / perPage.value)
 })
 const currentPage = ref(1)
 
+onMounted(() => {
+  watchEffect(() => {
+    console.log('PerPage:', perPage.value)
+    console.log('CurrentPage:', currentPage.value)
+    CommentService.getCommentsByNewsId(
+      news.value.id == null ? 1 : news.value.id,
+      perPage.value,
+      currentPage.value,
+    ).then((response) => {
+      commentlist.value = response.data
+      totalCommentCount.value = parseInt(response.headers['x-total-count'])
+    })
+  })
+})
 // Slice comments for current page
 const paginatedComments = computed(() => {
   const allComments = commentlist.value || []
@@ -58,13 +74,13 @@ function decrease() {
           <div class="bg-gray-600 rounded-md text-center text-white">Pending</div>
         </div>
 
-        <div id="commentCount" class="">{{ commentlist?.length }} comments</div>
+        <div id="commentCount" class="">{{ totalCommentCount }} comments</div>
       </div>
     </div>
     <div id="cmt-list" v-if="news">
       <div
         class="mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-4"
-        v-for="(cmt, index) in paginatedComments"
+        v-for="(cmt, index) in commentlist"
         :key="index"
       >
         <!-- Header -->
@@ -72,12 +88,12 @@ function decrease() {
           <h3 class="text-gray-900 font-semibold flex gap-2 items-center">
             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
               <span class="text-sm font-medium text-gray-600">{{
-                cmt.commenter.substring(0, 2).toUpperCase()
+                cmt.commenter?.substring(0, 2).toUpperCase()
               }}</span>
             </div>
             {{ cmt.commenter }}
           </h3>
-          <span class="text-sm text-gray-500">{{ cmt.date }}</span>
+          <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
         </div>
 
         <!-- Comment -->
