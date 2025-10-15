@@ -15,19 +15,18 @@ const pages = computed(() => {
   return Math.ceil((totalCommentCount.value ?? 0) / perPage.value)
 })
 const currentPage = ref(1)
+const props = defineProps<{ id: number }>()
 
 onMounted(() => {
   watchEffect(() => {
     console.log('PerPage:', perPage.value)
     console.log('CurrentPage:', currentPage.value)
-    CommentService.getCommentsByNewsId(
-      news.value.id == null ? 1 : news.value.id,
-      perPage.value,
-      currentPage.value,
-    ).then((response) => {
-      commentlist.value = response.data
-      totalCommentCount.value = parseInt(response.headers['x-total-count'])
-    })
+    CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
+      (response) => {
+        commentlist.value = response.data
+        totalCommentCount.value = parseInt(response.headers['x-total-count'])
+      },
+    )
   })
 })
 // Slice comments for current page

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ImageUpload from '@/components/ImageUpload.vue'
 import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import CommentService from '@/services/CommentService'
@@ -19,7 +20,7 @@ const voteType = ref<number>(0)
 const comment = ref<string>('')
 const posted = ref<boolean>(false)
 const notiString = ref<string>('')
-const imgLink = ref<string>('')
+const imgLink = ref<string[]>([])
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
 const voteToPost = ref<Vote>({ voteType: VoteType.Fake })
@@ -51,6 +52,9 @@ function clickBtn() {
   }
   console.log('VoteType:', voteToPost.value.voteType)
   commentToPost.value.comment = comment.value
+  commentToPost.value.imgLink = imgLink.value[0]
+    ? imgLink.value[0]
+    : 'https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png'
 
   if (commentToPost.value.comment == '') {
     console.log('Comment not filled!')
@@ -76,7 +80,7 @@ function clickBtn() {
 
       voteType.value = 0
       comment.value = ''
-      imgLink.value = ''
+      imgLink.value = []
       scrollTo({
         top: 0,
         behavior: 'smooth',
@@ -158,6 +162,7 @@ function clickBtn() {
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
           />
+          <ImageUpload v-model="imgLink" :multiple="false" :max="1" />
         </div>
         <button
           @click="clickBtn"
