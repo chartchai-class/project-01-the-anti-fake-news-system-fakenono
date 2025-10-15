@@ -1,6 +1,3 @@
-import NewsService from '@/services/NewsService'
-import { useNewsListStore } from '@/stores/newslist'
-import { NewsStatus } from '@/types'
 import HomeView from '@/views/HomeView.vue'
 import CommentsView from '@/views/news/CommentsView.vue'
 import DetailsView from '@/views/news/DetailsView.vue'
@@ -19,33 +16,9 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       props: (route) => ({
-        page: route.query.page,
-        limit: route.query.limit,
+        page: parseInt(route.query.page?.toString() || '1'),
+        limit: parseInt(route.query.limit?.toString() || '6'),
       }),
-      beforeEnter: () => {
-        const newsListStore = useNewsListStore()
-        if (newsListStore.newslist) {
-          return Promise.resolve()
-        }
-        return NewsService.getNews()
-          .then((response) => {
-            const newsList = response.data['news']
-            for (const news of newsList) {
-              const totalVoteCount = news.fakeVoteCount + news.verifiedVoteCount
-              if (totalVoteCount < 20) {
-                news.status = NewsStatus.Pending
-              } else if (news.verifiedVoteCount / totalVoteCount < 0.6) {
-                news.status = NewsStatus.Fake
-              } else {
-                news.status = NewsStatus.Verified
-              }
-            }
-            newsListStore.setNewsList(newsList)
-          })
-          .catch((error) => {
-            console.error('Failed to fetch news:', error)
-          })
-      },
     },
     {
       path: '/news/:id',
