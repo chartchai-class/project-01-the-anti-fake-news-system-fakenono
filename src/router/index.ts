@@ -63,6 +63,7 @@ const router = createRouter({
           path: 'vote',
           name: 'news-vote-view',
           component: VoteView,
+          props: true,
         },
         {
           path: 'comment',
@@ -75,6 +76,12 @@ const router = createRouter({
       path: '/post',
       name: 'news-post-view',
       component: PostView,
+    },
+    {
+      path: '/404/:resource',
+      name: '404-resource-view',
+      component: NotFoundView,
+      props: true,
     },
     {
       path: '/:catchAll(.*)',

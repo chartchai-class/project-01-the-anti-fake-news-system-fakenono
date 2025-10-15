@@ -2,31 +2,6 @@
 import { useNewsStore } from '@/stores/news'
 import { storeToRefs } from 'pinia'
 
-interface News {
-  id: number
-  topic: string
-  details: string
-  reporter: string
-  datetime: string
-  image: string
-  fakeVoteCount: number
-  verifiedVoteCount: number
-  comments: string[]
-}
-
-// const props = defineProps<{ id: string | number }>()
-// const news = ref<News | null>(null)
-// onMounted(async () => {
-//   const newsId = Number(props.id)
-//   if (!isNaN(newsId)) {
-//     try {
-//       const response = await NewsService.getNewsById(newsId)
-//       news.value = response.data
-//     } catch (error) {
-//       console.error('Failed to fetch news:', error)
-//     }
-//   }
-// })
 const store = useNewsStore()
 const { news } = storeToRefs(store)
 
@@ -47,15 +22,15 @@ function formatDate(datetime: string): string {
   <div v-if="news" class="space-y-6 px-6 py-8 max-w-7xl mx-auto">
     <div class="flex flex-wrap gap-1 justify-between items-center">
       <h1 class="text-3xl font-extrabold text-gray-900">{{ news.topic }}</h1>
-      <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 1">
+      <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 'Verified'">
         <div class="bg-green-600 rounded-md lg:w-[25%] w-[70%] text-center text-white">
           Verified
         </div>
       </div>
-      <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 0">
+      <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 'Fake'">
         <div class="bg-red-600 rounded-md lg:w-[25%] w-[60%] text-center text-white">Fake</div>
       </div>
-      <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 2">
+      <div id="status" class="w-[30%] flex sm:justify-end" v-if="news?.status == 'Pending'">
         <div class="bg-gray-600 rounded-md lg:w-[25%] w-[80%] text-center text-white">Pending</div>
       </div>
     </div>

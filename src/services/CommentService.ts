@@ -16,4 +16,7 @@ export default {
   getCommentsByNewsId(id: number, perPage: number, page: number) {
     return apiClient.get('/comments-by-news-id/' + id + '?limit=' + perPage + '&page=' + page)
   },
+  getNewsById(id: number) {
+    return apiClient.get('/news/' + id)
+  },
 }

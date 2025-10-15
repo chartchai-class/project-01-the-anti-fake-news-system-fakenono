@@ -26,10 +26,10 @@ export interface NewsListState {
 }
 
 export interface Comment {
-  id: number
+  id?: number
   newsId?: number // Can delete later
   commenter?: string
-  date: Date
+  date?: Date
   comment: string
   imgLink?: string
 }
@@ -39,13 +39,13 @@ export interface CommentListState {
 }
 
 export interface Vote {
-  id: number
+  id?: number
   voteType: VoteType
   voteReason?: string
-  createdAt: Date
+  createdAt?: Date
 }
 
 export enum VoteType {
-  Fake,
-  Real,
+  Fake = 1,
+  Real = 0,
 }

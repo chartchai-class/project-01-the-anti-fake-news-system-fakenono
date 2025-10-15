@@ -17,7 +17,7 @@ import axios from 'axios'
 //     return apiClient.get(`/news/${id}`)
 //   },
 // }
-
+const BASE_URL = 'http://localhost:8080'
 const apiClient = axios.create({
   baseURL: 'https://waiyanmoelwin.github.io/se331-midterm-project-db',
   withCredentials: false,
@@ -30,5 +30,8 @@ const apiClient = axios.create({
 export default {
   getNews() {
     return apiClient.get('/db.json')
+  },
+  getNewsById(id: number) {
+    return apiClient.get('/news/' + id)
   },
 }
