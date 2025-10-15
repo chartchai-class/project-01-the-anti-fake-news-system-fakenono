@@ -1,46 +1,50 @@
 <script setup lang="ts">
-import { useNewsListStore } from '@/stores/newslist'
-import { NewsStatus, type News } from '@/types'
+import ImageUpload from '@/components/ImageUpload.vue'
+import NewsService from '@/services/NewsService'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const topic = ref('')
 const details = ref('')
-const image = ref('')
+const image = ref([])
 const reporter = ref('')
 
-const newslistStore = useNewsListStore()
 const router = useRouter()
 
 const submitPost = () => {
-  const news: News = {
-    id: newslistStore.getNextId(),
+  const news = {
     topic: topic.value,
     details: details.value,
-    image: image.value
-      ? image.value
+    image: image.value[0]
+      ? image.value[0]
       : 'https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png',
     reporter: reporter.value,
-    datetime: new Date(),
-    fakeVoteCount: 0,
-    verifiedVoteCount: 0,
-    status: NewsStatus.Pending,
+    comments: [],
   }
 
-  newslistStore.addNews(news)
+  NewsService.postNews(news)
+    .then(
+      (response) => {
+        console.log('News posted successfully:', response.data)
+      },
+      (error) => {
+        console.error('Failed to post news:', error)
+      },
+    )
+    .then(() => {
+      topic.value = ''
+      details.value = ''
+      image.value = []
+      reporter.value = ''
 
-  topic.value = ''
-  details.value = ''
-  image.value = ''
-  reporter.value = ''
-
-  router.push({ name: 'home' })
+      router.push({ name: 'home' })
+    })
 }
 
 function cancelPost() {
   topic.value = ''
   details.value = ''
-  image.value = ''
+  image.value = []
   reporter.value = ''
   router.push({ name: 'home' })
 }
@@ -74,13 +78,7 @@ function cancelPost() {
     <label for="post-image" class="text-base md:text-lg font-bold mt-2"
       >Image URL (Optional):</label
     >
-    <input
-      type="text"
-      id="post-image"
-      class="text-xs md:text-base border border-gray-300 p-2 rounded-lg w-full bg-gray-100 mb-2"
-      placeholder="Enter image URL..."
-      v-model="image"
-    />
+    <ImageUpload v-model="image" :multiple="false" :max="1" />
 
     <label for="post-reporter" class="text-base md:text-lg font-bold mt-2">Reporter:</label>
     <input
