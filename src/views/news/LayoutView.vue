@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import CommentService from '@/services/CommentService'
 import { useNewsStore } from '@/stores/news'
-import { useNewsListStore } from '@/stores/newslist'
-import { storeToRefs } from 'pinia'
 import { computed, onMounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const tempId = parseInt(useRoute().params.id.toString())
-const newsStore = useNewsStore()
-const newslistStore = useNewsListStore()
-const { newslist } = storeToRefs(newslistStore)
 const router = useRouter()
 const totalCommentCount = computed(() => {
   return useNewStore.news?.comments.length
