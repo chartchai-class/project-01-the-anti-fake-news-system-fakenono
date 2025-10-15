@@ -1,7 +1,7 @@
 export enum NewsStatus {
-  Fake,
-  Verified,
-  Pending,
+  Fake = 'Fake',
+  Verified = 'Verified',
+  Pending = 'Pending',
 }
 
 export interface News {
@@ -14,7 +14,7 @@ export interface News {
   image: string
   fakeVoteCount: number
   verifiedVoteCount: number
-  comments: string[]
+  comments: Comment[]
 }
 
 export interface NewsState {
@@ -26,10 +26,10 @@ export interface NewsListState {
 }
 
 export interface Comment {
-  id?: number
-  newsId?: number // Can delete later
-  commenter?: string
-  date?: Date
+  id: number
+  newsId: number
+  commenter: string
+  date: Date
   comment: string
   imgLink?: string
 }

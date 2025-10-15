@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import NewsCard from '@/components/NewsCard.vue'
 import NewsCardListForm from '@/components/NewsCardListForm.vue'
-import { useNewsListStore } from '@/stores/newslist'
-import { NewsStatus, type News } from '@/types'
-import { storeToRefs } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import NewsService from '@/services/NewsService'
+import { type News } from '@/types'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-const store = useNewsListStore()
-const { newslist } = storeToRefs(store)
 
 const route = useRoute()
 const router = useRouter()
@@ -25,28 +21,37 @@ const props = defineProps({
 
 const page = ref(props.page)
 const limit = ref(props.limit)
-const totalPages = computed(() => Math.ceil((filterList.value?.length || 0) / limit.value))
 
-const filterList = ref<News[]>(newslist.value || [])
+const newslist = ref<News[]>([])
+const params = ref({})
+const totalNewsCount = ref(0)
+const totalPages = computed(() => {
+  return Math.ceil((totalNewsCount.value ?? 0) / limit.value)
+})
+onMounted(() => {
+  watchEffect(() => {
+    NewsService.getNews(params.value).then(
+      (response) => {
+        newslist.value = response.data
+        totalNewsCount.value = response.headers['x-total-count']
+      },
+      (error) => {
+        console.error('Failed to fetch news:', error)
+      },
+    )
+  })
+})
 
 function onFilterChange(event: Event) {
   const selectElement = event.target as HTMLSelectElement
   const filterValue = selectElement.value
-  if (filterValue === 'all') {
-    filterList.value = newslist.value || []
-  } else if (filterValue === 'verified') {
-    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Verified) || []
-  } else if (filterValue === 'fake') {
-    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Fake) || []
-  } else if (filterValue === 'pending') {
-    filterList.value = newslist.value?.filter((news) => news.status === NewsStatus.Pending) || []
+  if (filterValue === 'All' && params.value['status']) {
+    delete params.value['status']
+  } else {
+    params.value['status'] = filterValue
   }
   page.value = 1 // Reset to first page when filter changes
 }
-
-const displayList = computed(() =>
-  filterList.value.slice((page.value - 1) * limit.value, page.value * limit.value),
-)
 
 function onLimitChange(event: Event) {
   const selectElement = event.target as HTMLSelectElement
@@ -67,6 +72,8 @@ watch([page, limit], ([newPage, newLimit]) => {
       query: { resource: 'page' },
       params: { catchAll: 'pagenotfound' },
     })
+    params.value['page'] = newPage
+    params.value['limit'] = newLimit
     return
   }
   router.push({
@@ -86,6 +93,8 @@ watch(
 
     page.value = newPage
     limit.value = newLimit
+    params.value['page'] = newPage
+    params.value['limit'] = newLimit
   },
   { immediate: true },
 )
@@ -124,12 +133,12 @@ function toggleView() {
         class="text-white bg-black rounded-lg"
         @change="onFilterChange"
       >
-        <option value="all" class="font-semibold hover:bg-gray-300 hover:text-black">All</option>
-        <option value="verified" class="font-semibold hover:bg-gray-300 hover:text-black">
+        <option value="All" class="font-semibold hover:bg-gray-300 hover:text-black">All</option>
+        <option value="Verified" class="font-semibold hover:bg-gray-300 hover:text-black">
           Verified
         </option>
-        <option value="fake" class="font-semibold hover:bg-gray-300 hover:text-black">Fake</option>
-        <option value="pending" class="font-semibold hover:bg-gray-300 hover:text-black">
+        <option value="Fake" class="font-semibold hover:bg-gray-300 hover:text-black">Fake</option>
+        <option value="Pending" class="font-semibold hover:bg-gray-300 hover:text-black">
           Pending
         </option>
       </select>
@@ -186,11 +195,11 @@ function toggleView() {
   </div>
 
   <div v-if="view === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 m-8">
-    <NewsCard v-for="newsItem in displayList" :key="newsItem.id" :news="newsItem" />
+    <NewsCard v-for="newsItem in newslist" :key="newsItem.id" :news="newsItem" />
   </div>
 
   <div v-else class="flex flex-col justify-center m-2 md:m-8 gap-2">
-    <NewsCardListForm v-for="newsItem in displayList" :key="newsItem.id" :news="newsItem" />
+    <NewsCardListForm v-for="newsItem in newslist" :key="newsItem.id" :news="newsItem" />
   </div>
 
   <div class="flex md:flex-row flex-col items-center justify-start m-6 ml-14 font-semibold">
