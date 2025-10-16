@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isAuthorize } from '@/authorizationHelper'
 import ImageUpload from '@/components/ImageUpload.vue'
 import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
@@ -6,7 +7,7 @@ import CommentService from '@/services/CommentService'
 import VoteCommentService from '@/services/VoteCommentService'
 import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import { VoteType, type Comment, type Vote } from '@/types'
+import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
@@ -26,7 +27,11 @@ const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
 const voteToPost = ref<Vote>({ voteType: VoteType.Fake })
 const commentToPost = ref<Comment>({ comment: '' })
 const props = defineProps<{ id: number }>()
+const isAuthorized = computed(() => {
+  return isAuthorize([UserRoles.ROLE_READER])
+})
 
+console.log('Is Authorized:', isAuthorized.value)
 // If comment is empty , not allowed to vote
 const btnDisable = computed(() => {
   if (comment.value.trim() == '') {
@@ -110,7 +115,7 @@ function clickBtn() {
         </div>
       </div>
 
-      <div id="form" class="bg-white p-6 space-y-5">
+      <div id="form" class="bg-white p-6 space-y-5" v-if="isAuthorized">
         <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
 
         <!-- Authentic option -->
@@ -173,6 +178,31 @@ function clickBtn() {
           Submit
         </button>
         <!-- <div v-if="btnDisable">Please Fill Al</div> -->
+      </div>
+      <div id="form" class="bg-white p-6 space-y-5" v-else>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">
+          You must be logged in to vote on this article
+        </h2>
+        <p class="text-gray-600 mb-4">
+          Please log in or create an account to share your opinion and help verify news
+          authenticity.
+        </p>
+
+        <div class="flex gap-4">
+          <RouterLink
+            to="/login"
+            class="px-5 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
+          >
+            Log In
+          </RouterLink>
+
+          <RouterLink
+            to="/register"
+            class="px-5 py-2 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-600 hover:text-white transition duration-200"
+          >
+            Register
+          </RouterLink>
+        </div>
       </div>
     </div>
 

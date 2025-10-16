@@ -18,6 +18,7 @@ onMounted(() => {
   // news.value = newslist.value.find((item) => item.id === tempId) || null
   // newsStore.setNews(news.value)
   userStore.reloadUserFromStorages()
+  console.log('User', userStore.user)
   watchEffect(() => {
     console.log('News ID:', tempId)
     CommentService.getNewsById(tempId)

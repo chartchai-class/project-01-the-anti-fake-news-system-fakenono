@@ -53,9 +53,9 @@ export enum VoteType {
 // Temporarily defined for implementing authorization
 
 export enum UserRoles {
-  ROLE_READER,
-  ROLE_MEMBER,
-  ROLE_ADMIN,
+  ROLE_READER = 'ROLE_READER',
+  ROLE_MEMBER = 'ROLE_MEMBER',
+  ROLE_ADMIN = 'ROLE_ADMIN',
 }
 export interface User {
   id: number
