@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CommentService from '@/services/CommentService'
 import { useNewsStore } from '@/stores/news'
+import { useUserStore } from '@/stores/user'
 import { computed, onMounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -10,11 +11,13 @@ const totalCommentCount = computed(() => {
   return useNewStore.news?.comments.length
 })
 const useNewStore = useNewsStore()
+const userStore = useUserStore()
 
 onMounted(() => {
   // Need to change , when news part is finished
   // news.value = newslist.value.find((item) => item.id === tempId) || null
   // newsStore.setNews(news.value)
+  userStore.reloadUserFromStorages()
   watchEffect(() => {
     console.log('News ID:', tempId)
     CommentService.getNewsById(tempId)

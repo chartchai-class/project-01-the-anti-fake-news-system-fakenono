@@ -49,3 +49,26 @@ export enum VoteType {
   Fake = 1,
   Real = 0,
 }
+
+// Temporarily defined for implementing authorization
+
+export enum UserRoles {
+  ROLE_READER,
+  ROLE_MEMBER,
+  ROLE_ADMIN,
+}
+export interface User {
+  id: number
+  name: string
+  surname: string
+  username?: string
+  email: string
+  imageUrl: string
+  roles: UserRoles[]
+  postedNews?: News[]
+  postedComments?: Comment[]
+}
+
+export interface UserState {
+  user: User | null
+}
