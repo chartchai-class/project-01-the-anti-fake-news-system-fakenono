@@ -26,10 +26,10 @@ export interface NewsListState {
 }
 
 export interface Comment {
-  id: number
-  newsId: number
-  commenter: string
-  date: Date
+  id?: number
+  newsId?: number
+  commenter?: User
+  date?: Date
   comment: string
   imgLink?: string
 }

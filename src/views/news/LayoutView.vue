@@ -13,10 +13,13 @@ const totalCommentCount = computed(() => {
 const useNewStore = useNewsStore()
 const userStore = useUserStore()
 
+CommentService.loginTemp().then((reponse) => {
+  localStorage.setItem('access_token', reponse.data.access_token)
+  userStore.setUser(reponse.data.user)
+})
 onMounted(() => {
   // Need to change , when news part is finished
-  // news.value = newslist.value.find((item) => item.id === tempId) || null
-  // newsStore.setNews(news.value)
+
   userStore.reloadUserFromStorages()
   console.log('User', userStore.user)
   watchEffect(() => {
@@ -32,16 +35,7 @@ onMounted(() => {
         router.push({ name: '404-resource-view', params: { resource: 'News' } })
       })
   })
-  // CommentService.getCommentsByNewsId(tempId, 6, 1).then((comments) => {
-  //   totalCommentCount.value = comments.headers['x-total-count']
-  // })
 })
-
-// function setStatus(news: News): void {
-//   if (news.status == "Pending")
-//     news.status = NewsStatus.Pending
-//   else if(news.status=="")
-// }
 </script>
 
 <template>

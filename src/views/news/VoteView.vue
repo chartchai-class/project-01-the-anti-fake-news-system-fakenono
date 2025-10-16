@@ -5,8 +5,8 @@ import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import CommentService from '@/services/CommentService'
 import VoteCommentService from '@/services/VoteCommentService'
-import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
+import { useUserStore } from '@/stores/user'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
@@ -14,9 +14,6 @@ import { computed, ref } from 'vue'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
-const commentStore = useCommentListStore()
-storeToRefs(commentStore)
-//storeToRefs(votetrackStore)
 const voteType = ref<number>(0)
 const comment = ref<string>('')
 const posted = ref<boolean>(false)
@@ -25,14 +22,15 @@ const imgLink = ref<string[]>([])
 const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
 const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
 const voteToPost = ref<Vote>({ voteType: VoteType.Fake })
-const commentToPost = ref<Comment>({ comment: '' })
+const commentToPost = ref<Comment>({
+  comment: '',
+})
+//Get news id
 const props = defineProps<{ id: number }>()
+
 const isAuthorized = computed(() => {
   return isAuthorize([UserRoles.ROLE_READER])
 })
-
-console.log('Is Authorized:', isAuthorized.value)
-// If comment is empty , not allowed to vote
 const btnDisable = computed(() => {
   if (comment.value.trim() == '') {
     return true
@@ -45,10 +43,7 @@ const btnDisable = computed(() => {
  * If reader , check whether he/she already has voted on this news
  * If voted , shown Something instead of vote form
  */
-
-function clickBtn() {
-  nProgress.start()
-  posted.value = true
+function validateInput() {
   console.log('Vote:', voteType.value)
   if (voteType.value == 0) {
     voteToPost.value.voteType = VoteType.Real
@@ -60,6 +55,7 @@ function clickBtn() {
   commentToPost.value.imgLink = imgLink.value[0]
     ? imgLink.value[0]
     : 'https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png'
+  // commentToPost.value.commenter = useUserStore().user!
 
   if (commentToPost.value.comment == '') {
     console.log('Comment not filled!')
@@ -68,33 +64,46 @@ function clickBtn() {
     setTimeout(() => {
       posted.value = false
     }, 3000)
+    return false
+  }
+  return true
+}
+function clickBtn() {
+  nProgress.start()
+  posted.value = true
+
+  if (!validateInput()) {
     return
   }
 
   // news id received from props from layoutview, in router
   const tempNewsId = props.id
+  const user = useUserStore().user
   console.log('Posted Comment:', comment.value)
-  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, tempNewsId).then(
-    (response) => {
-      console.log(response.status, 'Post Done')
-      notiString.value = ' Your vote has been recorded.'
-      CommentService.getNewsById(tempNewsId).then((response) => {
-        newsStore.setNews(response.data)
-      })
-      nProgress.done()
+  VoteCommentService.postVoteAndComment(
+    commentToPost.value,
+    voteToPost.value,
+    tempNewsId,
+    user!,
+  ).then((response) => {
+    console.log(response.status, 'Post Done')
+    notiString.value = ' Your vote has been recorded.'
+    CommentService.getNewsById(tempNewsId).then((response) => {
+      newsStore.setNews(response.data)
+    })
+    nProgress.done()
 
-      voteType.value = 0
-      comment.value = ''
-      imgLink.value = []
-      scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
-      setTimeout(() => {
-        posted.value = false
-      }, 3000)
-    },
-  )
+    voteType.value = 0
+    comment.value = ''
+    imgLink.value = []
+    scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    setTimeout(() => {
+      posted.value = false
+    }, 3000)
+  })
 }
 </script>
 

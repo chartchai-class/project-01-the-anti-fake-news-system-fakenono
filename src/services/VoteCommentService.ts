@@ -1,4 +1,4 @@
-import type { Comment, Vote } from '@/types'
+import type { Comment, User, Vote } from '@/types'
 import axios from 'axios'
 const BASE_URL = 'http://localhost:8080'
 const apiClient = axios.create({
@@ -24,10 +24,11 @@ apiClient.interceptors.request.use(
 )
 
 export default {
-  postVoteAndComment(comment: Comment, vote: Vote, newsId: number) {
+  postVoteAndComment(comment: Comment, vote: Vote, newsId: number, user: User) {
     return apiClient.post('/comment-vote/' + newsId, {
       comment: comment,
       vote: vote,
+      userId: user.id,
     })
   },
 }
