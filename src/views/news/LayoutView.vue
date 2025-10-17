@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CommentService from '@/services/CommentService'
 import { useNewsStore } from '@/stores/news'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/tempUser'
 import { computed, onMounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -13,10 +13,17 @@ const totalCommentCount = computed(() => {
 const useNewStore = useNewsStore()
 const userStore = useUserStore()
 
-CommentService.loginTemp().then((reponse) => {
-  localStorage.setItem('access_token', reponse.data.access_token)
-  userStore.setUser(reponse.data.user)
-})
+//Need to remove when Login page is created
+const tempLoginHandle = () => {
+  CommentService.loginTemp().then((reponse) => {
+    localStorage.setItem('access_token', reponse.data.access_token)
+    userStore.setUser(reponse.data.user)
+  })
+}
+const tempLogoutHandle = () => {
+  userStore.clearUser()
+  localStorage.clear()
+}
 onMounted(() => {
   // Need to change , when news part is finished
 
@@ -80,4 +87,8 @@ onMounted(() => {
       Votes
     </RouterLink>
   </div>
+
+  <!-- Temp Login Button -->
+  <button @click="tempLoginHandle">Login</button>
+  <button @click="tempLogoutHandle">Logout</button>
 </template>

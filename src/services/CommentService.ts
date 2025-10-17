@@ -35,8 +35,8 @@ export default {
   },
   loginTemp() {
     return apiClient.post('/api/v1/auth/authenticate', {
-      username: 'admin',
-      password: 'admin',
+      username: 'user',
+      password: 'user',
     })
   },
 }
