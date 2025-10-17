@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { isAuthorize } from '@/authorizationHelper'
 import CommentService from '@/services/CommentService'
 import { useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
+import { UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watchEffect } from 'vue'
 
@@ -16,7 +18,9 @@ const pages = computed(() => {
 })
 const currentPage = ref(1)
 const props = defineProps<{ id: number }>()
-
+const isAdmin = computed(() => {
+  return isAuthorize([UserRoles.ROLE_ADMIN])
+})
 onMounted(() => {
   watchEffect(() => {
     console.log('PerPage:', perPage.value)
@@ -92,7 +96,12 @@ function decrease() {
             </div>
             {{ cmt.commenter }}
           </h3>
-          <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
+            <button v-if="isAdmin" class="text-red-500 hover:text-red-700 text-sm font-medium">
+              Delete
+            </button>
+          </div>
         </div>
 
         <!-- Comment -->
