@@ -39,4 +39,7 @@ export default {
       password: 'admin',
     })
   },
+  deleteComment(commentId: number) {
+    return apiClient.delete('/delete-comments/' + commentId)
+  },
 }

@@ -5,6 +5,7 @@ import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import CommentService from '@/services/CommentService'
 import VoteCommentService from '@/services/VoteCommentService'
+import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { useUserStore } from '@/stores/tempUser'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
@@ -31,6 +32,7 @@ const props = defineProps<{ id: number }>()
 const isAuthorized = computed(() => {
   return isAuthorize([UserRoles.ROLE_READER])
 })
+const commentCountStore = useCommentCountStore()
 const btnDisable = computed(() => {
   if (comment.value.trim() == '') {
     return true
@@ -91,6 +93,7 @@ function clickBtn() {
     CommentService.getNewsById(tempNewsId).then((response) => {
       newsStore.setNews(response.data)
     })
+    commentCountStore.setCount(tempNewsId)
     nProgress.done()
 
     voteType.value = 0

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isAuthorize } from '@/authorizationHelper'
 import CommentService from '@/services/CommentService'
-import { useCommentListStore } from '@/stores/commentlists'
+import { useCommentCountStore, useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
@@ -10,8 +10,11 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
 const commentListStore = useCommentListStore()
+const commentCountStore = useCommentCountStore()
 const { commentlist } = storeToRefs(commentListStore)
-const totalCommentCount = ref(0)
+const totalCommentCount = computed(() => {
+  return commentCountStore.count
+})
 const perPage = ref(6)
 const pages = computed(() => {
   return Math.ceil((totalCommentCount.value ?? 0) / perPage.value)
@@ -25,14 +28,20 @@ onMounted(() => {
   watchEffect(() => {
     console.log('PerPage:', perPage.value)
     console.log('CurrentPage:', currentPage.value)
-    CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
-      (response) => {
-        commentlist.value = response.data
-        totalCommentCount.value = parseInt(response.headers['x-total-count'])
-      },
-    )
+    fetchComments()
   })
 })
+
+function fetchComments() {
+  CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
+    (response) => {
+      commentlist.value = response.data
+      // totalCommentCount.value = parseInt(response.headers['x-total-count'])
+      commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
+    },
+  )
+}
+
 // Slice comments for current page
 const paginatedComments = computed(() => {
   const allComments = commentlist.value || []
@@ -54,6 +63,13 @@ function increase() {
 
 function decrease() {
   currentPage.value -= 1
+}
+
+function deleteCommentHandle(commentId: number) {
+  CommentService.deleteComment(commentId).then((response) => {
+    console.log(response.status)
+    fetchComments()
+  })
 }
 </script>
 
@@ -98,7 +114,11 @@ function decrease() {
           </h3>
           <div class="flex flex-col">
             <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
-            <button v-if="isAdmin" class="text-red-500 hover:text-red-700 text-sm font-medium">
+            <button
+              v-if="isAdmin"
+              class="text-red-500 hover:text-red-700 text-sm font-medium"
+              @click="deleteCommentHandle(cmt.id!)"
+            >
               Delete
             </button>
           </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CommentService from '@/services/CommentService'
+import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { useUserStore } from '@/stores/tempUser'
 import { computed, onMounted, watchEffect } from 'vue'
@@ -8,10 +9,11 @@ import { useRoute, useRouter } from 'vue-router'
 const tempId = parseInt(useRoute().params.id.toString())
 const router = useRouter()
 const totalCommentCount = computed(() => {
-  return useNewStore.news?.comments.length
+  return commentCountStore.count
 })
 const useNewStore = useNewsStore()
 const userStore = useUserStore()
+const commentCountStore = useCommentCountStore()
 
 //Need to remove when Login page is created
 const tempLoginHandle = () => {
@@ -28,6 +30,7 @@ onMounted(() => {
   // Need to change , when news part is finished
 
   userStore.reloadUserFromStorages()
+
   console.log('User', userStore.user)
   watchEffect(() => {
     console.log('News ID:', tempId)
@@ -41,6 +44,7 @@ onMounted(() => {
         console.log(err)
         router.push({ name: '404-resource-view', params: { resource: 'News' } })
       })
+    commentCountStore.setCount(tempId)
   })
 })
 </script>
