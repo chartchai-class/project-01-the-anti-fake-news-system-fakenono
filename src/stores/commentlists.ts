@@ -10,6 +10,11 @@ export const useCommentListStore = defineStore('commentlist', {
     setCommentList(comments: Comment[]) {
       this.commentlist = comments
     },
+    fetchComments(newsId: number, perPage: number, page: number) {
+      CommentService.getCommentsByNewsId(newsId, perPage, page).then((response) => {
+        this.commentlist = response.data
+      })
+    },
     addComment(comment: Comment) {
       this.commentlist?.push(comment)
     },

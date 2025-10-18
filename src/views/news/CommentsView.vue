@@ -6,7 +6,7 @@ import { useNewsStore } from '@/stores/news'
 import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
@@ -38,6 +38,15 @@ onMounted(() => {
     console.log('PerPage:', perPage.value)
     console.log('CurrentPage:', currentPage.value)
     fetchComments()
+  })
+  watch(isAdmin, () => {
+    currentPage.value = 1
+    CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
+      (response) => {
+        commentlist.value = response.data
+        commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
+      },
+    )
   })
 })
 
@@ -112,6 +121,9 @@ function deleteCommentHandle(commentId: number) {
         class="mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-4"
         v-for="(cmt, index) in commentlist"
         :key="index"
+        :class="{
+          'opacity-50 italic pointer-events-none': cmt.deleted,
+        }"
       >
         <!-- Header -->
         <div class="flex items-center justify-between mb-3">
@@ -126,19 +138,23 @@ function deleteCommentHandle(commentId: number) {
           <div class="flex flex-col">
             <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
             <button
-              v-if="isAdmin"
+              v-if="isAdmin && !cmt.deleted"
               class="text-red-500 hover:text-red-700 text-sm font-medium"
               @click="deleteCommentHandle(cmt.id!)"
             >
               Delete
             </button>
+
+            <!-- <pre>{{ cmt }}</pre> -->
           </div>
         </div>
 
         <!-- Comment -->
         <p class="text-gray-700 leading-relaxed text-sm">
-          {{ cmt.comment }}
+          {{ cmt.comment }} <br />
+          <span class="italic text-red-600" v-if="cmt.deleted">This comment has been deleted!</span>
         </p>
+
         <div class="mt-2">
           <img
             v-if="cmt.imgLink"

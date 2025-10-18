@@ -2,7 +2,7 @@
 import { useNewsStore } from '@/stores/news'
 import { useVoteDataStore } from '@/stores/votesTrackList'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const store = useNewsStore()
 const { news } = storeToRefs(store)
@@ -13,6 +13,7 @@ const realVote = computed(() => {
 const fakeVote = computed(() => {
   return voteDataStore.voteData?.fakeVoteCount
 })
+const props = defineProps<{ id: number }>()
 function formatDate(datetime: string): string {
   const date = new Date(datetime)
   return date.toLocaleString('en-US', {
@@ -24,6 +25,9 @@ function formatDate(datetime: string): string {
     minute: '2-digit',
   })
 }
+onMounted(() => {
+  voteDataStore.setVotes(props.id)
+})
 </script>
 
 <template>

@@ -32,6 +32,7 @@ export interface Comment {
   date?: Date
   comment: string
   imgLink?: string
+  deleted?: boolean
 }
 
 export interface CommentListState {
