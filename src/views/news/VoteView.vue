@@ -8,10 +8,11 @@ import VoteCommentService from '@/services/VoteCommentService'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { useUserStore } from '@/stores/tempUser'
+import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
@@ -20,8 +21,8 @@ const comment = ref<string>('')
 const posted = ref<boolean>(false)
 const notiString = ref<string>('')
 const imgLink = ref<string[]>([])
-const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
-const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
+const realVotes = computed(() => voteDataStore.voteData?.realVoteCount || 0)
+const fakeVotes = computed(() => voteDataStore.voteData?.fakeVoteCount || 0)
 const voteToPost = ref<Vote>({ voteType: VoteType.Fake })
 const commentToPost = ref<Comment>({
   comment: '',
@@ -33,6 +34,7 @@ const isAuthorized = computed(() => {
   return isAuthorize([UserRoles.ROLE_READER])
 })
 const commentCountStore = useCommentCountStore()
+const voteDataStore = useVoteDataStore()
 const btnDisable = computed(() => {
   if (comment.value.trim() == '') {
     return true
@@ -40,6 +42,9 @@ const btnDisable = computed(() => {
   return false
 })
 
+onMounted(() => {
+  voteDataStore.setVotes(props.id)
+})
 /**
  * Should add function to check whether user is reader or unknown
  * If reader , check whether he/she already has voted on this news
@@ -94,6 +99,7 @@ function clickBtn() {
       newsStore.setNews(response.data)
     })
     commentCountStore.setCount(tempNewsId)
+    voteDataStore.setVotes(tempNewsId)
     nProgress.done()
 
     voteType.value = 0
@@ -225,11 +231,11 @@ function clickBtn() {
         <h2 class="font-semibold text-xl mb-5">Current Stats</h2>
         <div id="realCount" class="flex gap-10 mb-4">
           <span>Real Votes:</span>
-          <span>{{ news?.verifiedVoteCount }}</span>
+          <span>{{ realVotes }}</span>
         </div>
         <div id="fakeCount" class="flex gap-10 mb-4">
           <span>Fake Votes:</span>
-          <span>{{ news?.fakeVoteCount }}</span>
+          <span>{{ fakeVotes }}</span>
         </div>
         <div id="status" class="flex gap-10 mb-4">
           <span>Status:</span>

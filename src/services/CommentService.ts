@@ -40,6 +40,6 @@ export default {
     })
   },
   deleteComment(commentId: number) {
-    return apiClient.delete('/delete-comments/' + commentId)
+    return apiClient.delete('/comment-vote/' + commentId)
   },
 }

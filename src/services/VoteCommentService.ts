@@ -31,4 +31,7 @@ export default {
       userId: user.id,
     })
   },
+  getVote(newsId: number) {
+    return apiClient.get('/votes-by-news-id/' + newsId)
+  },
 }

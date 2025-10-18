@@ -44,10 +44,17 @@ export interface Vote {
   voteReason?: string
   createdAt?: Date
 }
-
+export interface VoteData {
+  realVoteCount: number
+  fakeVoteCount: number
+}
 export enum VoteType {
   Fake = 1,
   Real = 0,
+}
+
+export interface VoteDataState {
+  voteData: VoteData | null
 }
 
 // Temporarily defined for implementing authorization
