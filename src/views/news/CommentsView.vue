@@ -3,6 +3,7 @@ import { isAuthorize } from '@/authorizationHelper'
 import CommentService from '@/services/CommentService'
 import { useCommentCountStore, useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
+import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watchEffect } from 'vue'
@@ -24,6 +25,14 @@ const props = defineProps<{ id: number }>()
 const isAdmin = computed(() => {
   return isAuthorize([UserRoles.ROLE_ADMIN])
 })
+
+const voteDataStore = useVoteDataStore()
+const realVote = computed(() => {
+  return voteDataStore.voteData?.realVoteCount
+})
+const fakeVote = computed(() => {
+  return voteDataStore.voteData?.fakeVoteCount
+})
 onMounted(() => {
   watchEffect(() => {
     console.log('PerPage:', perPage.value)
@@ -38,6 +47,8 @@ function fetchComments() {
       commentlist.value = response.data
       // totalCommentCount.value = parseInt(response.headers['x-total-count'])
       commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
+      voteDataStore.setVotes(props.id)
+      voteDataStore.setVotes(props.id)
     },
   )
 }
@@ -81,8 +92,8 @@ function deleteCommentHandle(commentId: number) {
         Discussion about <span class="font-bold"> "{{ news?.topic }}"</span>
       </div>
       <div class="flex flex-wrap gap-4 mt-2">
-        <div id="upvoke " class="text-green-600">{{ news?.verifiedVoteCount }} real votes</div>
-        <div id="downvoke" class="text-red-600">{{ news?.fakeVoteCount }} fake votes</div>
+        <div id="upvoke " class="text-green-600">{{ realVote }} real votes</div>
+        <div id="downvoke" class="text-red-600">{{ fakeVote }} fake votes</div>
         <div id="status" class="px-2" v-if="news?.status == 1">
           <div class="bg-green-600 rounded-md text-center text-white">Verified</div>
         </div>
