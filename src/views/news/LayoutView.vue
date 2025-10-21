@@ -61,7 +61,8 @@ onMounted(() => {
       :to="{ name: 'home' }"
       class="sm:px-4 px-1 py-2 bg-white text-black font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 m-10 mt-10 border border-black"
     >
-      <span class="font-bold text-xl"> &larr; </span>&nbsp;&nbsp; Back To Home</RouterLink
+      <span class="font-bold text-xl hidden md:inline-block"> &larr; </span
+      ><span class="hidden md:inline">&nbsp;&nbsp;</span> Back To Home</RouterLink
     >
   </div>
 
