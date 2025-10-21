@@ -8,7 +8,6 @@ import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-// import { useUserStore } from '@/stores/tempUser'
 import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
@@ -60,9 +59,7 @@ function validateInput() {
   }
   console.log('VoteType:', voteToPost.value.voteType)
   commentToPost.value.comment = comment.value
-  commentToPost.value.imgLink = imgLink.value[0]
-    ? imgLink.value[0]
-    : 'https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png'
+  commentToPost.value.imageLink = imgLink.value[0]
   // commentToPost.value.commenter = useUserStore().user!
 
   if (commentToPost.value.comment == '') {
@@ -85,35 +82,32 @@ function clickBtn() {
   }
 
   // news id received from props from layoutview, in router
-  const tempNewsId = props.id
+  const newsId = props.id
   const user = useAuthStore().user
   console.log('Posted Comment:', comment.value)
-  VoteCommentService.postVoteAndComment(
-    commentToPost.value,
-    voteToPost.value,
-    tempNewsId,
-    user!,
-  ).then((response) => {
-    console.log(response.status, 'Post Done')
-    notiString.value = ' Your vote has been recorded.'
-    CommentService.getNewsById(tempNewsId).then((response) => {
-      newsStore.setNews(response.data)
-    })
-    commentCountStore.setCount(tempNewsId)
-    voteDataStore.setVotes(tempNewsId)
-    nProgress.done()
+  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, newsId, user!).then(
+    (response) => {
+      console.log(response.status, 'Post Done')
+      notiString.value = ' Your vote has been recorded.'
+      CommentService.getNewsById(newsId).then((response) => {
+        newsStore.setNews(response.data)
+      })
+      commentCountStore.setCount(newsId)
+      voteDataStore.setVotes(newsId)
+      nProgress.done()
 
-    voteType.value = 0
-    comment.value = ''
-    imgLink.value = []
-    scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
-    setTimeout(() => {
-      posted.value = false
-    }, 3000)
-  })
+      voteType.value = 0
+      comment.value = ''
+      imgLink.value = []
+      scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
+      setTimeout(() => {
+        posted.value = false
+      }, 3000)
+    },
+  )
 }
 </script>
 

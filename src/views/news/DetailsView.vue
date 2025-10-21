@@ -14,7 +14,7 @@ const fakeVote = computed(() => {
   return voteDataStore.voteData?.fakeVoteCount
 })
 const props = defineProps<{ id: number }>()
-function formatDate(datetime: string): string {
+function formatDate(datetime: Date): string {
   const date = new Date(datetime)
   return date.toLocaleString('en-US', {
     weekday: 'short',
@@ -26,7 +26,7 @@ function formatDate(datetime: string): string {
   })
 }
 onMounted(() => {
-  voteDataStore.setVotes(props.id)
+  voteDataStore.setVotes(props.id) //newsId
 })
 </script>
 

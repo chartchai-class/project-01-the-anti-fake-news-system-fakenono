@@ -5,11 +5,10 @@ import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { UserRoles } from '@/types'
-//import { useUserStore } from '@/stores/tempUser'
 import { computed, onMounted, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const tempId = parseInt(useRoute().params.id.toString())
+const newsId = parseInt(useRoute().params.id.toString())
 const router = useRouter()
 const totalCommentCount = computed(() => {
   return commentCountStore.count
@@ -27,7 +26,7 @@ const tempLoginHandle = () => {
   //   localStorage.setItem('access_token', reponse.data.access_token)
   //   userStore.setUser(reponse.data.user)
   // })
-  authStore.login('user', 'user') //to remove later
+  authStore.login('admin', 'admin') //to remove later
 }
 const tempLogoutHandle = () => {
   // userStore.clearUser()
@@ -37,25 +36,21 @@ const tempLogoutHandle = () => {
 onMounted(() => {
   // Need to change , when news part is finished
 
-  //userStore.reloadUserFromStorages()
-
   console.log('User', authStore.user)
   watchEffect(() => {
-    console.log('News ID:', tempId)
-    CommentService.getNewsById(tempId)
+    CommentService.getNewsById(newsId)
       .then((response) => {
         useNewStore.setNews(response.data)
-        // setStatus(useNewStore.news)
         console.log(useNewStore.news)
       })
       .catch((err) => {
         console.log(err)
         router.push({ name: '404-resource-view', params: { resource: 'News' } })
       })
-    commentCountStore.setCount(tempId)
+    commentCountStore.setCount(newsId)
   })
   watch(isAdmin, () => {
-    commentCountStore.setCount(tempId)
+    commentCountStore.setCount(newsId)
   })
 })
 </script>
