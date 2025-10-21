@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import { useNewsStore } from '@/stores/news'
+import { useVoteDataStore } from '@/stores/votesTrackList'
 import { storeToRefs } from 'pinia'
+import { computed, onMounted } from 'vue'
 
 const store = useNewsStore()
 const { news } = storeToRefs(store)
-
+const voteDataStore = useVoteDataStore()
+const realVote = computed(() => {
+  return voteDataStore.voteData?.realVoteCount
+})
+const fakeVote = computed(() => {
+  return voteDataStore.voteData?.fakeVoteCount
+})
+const props = defineProps<{ id: number }>()
 function formatDate(datetime: string): string {
   const date = new Date(datetime)
   return date.toLocaleString('en-US', {
@@ -16,6 +25,9 @@ function formatDate(datetime: string): string {
     minute: '2-digit',
   })
 }
+onMounted(() => {
+  voteDataStore.setVotes(props.id)
+})
 </script>
 
 <template>
@@ -51,11 +63,11 @@ function formatDate(datetime: string): string {
       <div class="grid grid-cols-2 gap-6 w-full max-w-xl">
         <div class="bg-white rounded-xl p-6 text-center">
           <p class="text-gray-500 mb-2">Real Votes</p>
-          <p class="text-2xl font-bold text-green-600">{{ news.verifiedVoteCount }}</p>
+          <p class="text-2xl font-bold text-green-600">{{ realVote }}</p>
         </div>
         <div class="bg-white rounded-xl p-6 text-center">
           <p class="text-gray-500 mb-2">Fake Votes</p>
-          <p class="text-2xl font-bold text-red-600">{{ news.fakeVoteCount }}</p>
+          <p class="text-2xl font-bold text-red-600">{{ fakeVote }}</p>
         </div>
       </div>
     </div>

@@ -42,6 +42,7 @@ const router = createRouter({
           path: 'comment',
           name: 'news-comment-view',
           component: CommentsView,
+          props: true,
         },
       ],
     },

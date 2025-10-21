@@ -1,35 +1,67 @@
 <script setup lang="ts">
+import { isAuthorize } from '@/authorizationHelper'
 import CommentService from '@/services/CommentService'
-import { useCommentListStore } from '@/stores/commentlists'
+import { useCommentCountStore, useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
+import { useVoteDataStore } from '@/stores/votesTrackList'
+import { UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
 const commentListStore = useCommentListStore()
+const commentCountStore = useCommentCountStore()
 const { commentlist } = storeToRefs(commentListStore)
-const totalCommentCount = ref(0)
+const totalCommentCount = computed(() => {
+  return commentCountStore.count
+})
 const perPage = ref(6)
 const pages = computed(() => {
   return Math.ceil((totalCommentCount.value ?? 0) / perPage.value)
 })
 const currentPage = ref(1)
+const props = defineProps<{ id: number }>()
+const isAdmin = computed(() => {
+  return isAuthorize([UserRoles.ROLE_ADMIN])
+})
 
+const voteDataStore = useVoteDataStore()
+const realVote = computed(() => {
+  return voteDataStore.voteData?.realVoteCount
+})
+const fakeVote = computed(() => {
+  return voteDataStore.voteData?.fakeVoteCount
+})
 onMounted(() => {
   watchEffect(() => {
     console.log('PerPage:', perPage.value)
     console.log('CurrentPage:', currentPage.value)
-    CommentService.getCommentsByNewsId(
-      news.value.id == null ? 1 : news.value.id,
-      perPage.value,
-      currentPage.value,
-    ).then((response) => {
-      commentlist.value = response.data
-      totalCommentCount.value = parseInt(response.headers['x-total-count'])
-    })
+    fetchComments()
+  })
+  watch(isAdmin, () => {
+    currentPage.value = 1
+    CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
+      (response) => {
+        commentlist.value = response.data
+        commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
+      },
+    )
   })
 })
+
+function fetchComments() {
+  CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
+    (response) => {
+      commentlist.value = response.data
+      // totalCommentCount.value = parseInt(response.headers['x-total-count'])
+      commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
+      voteDataStore.setVotes(props.id)
+      voteDataStore.setVotes(props.id)
+    },
+  )
+}
+
 // Slice comments for current page
 const paginatedComments = computed(() => {
   const allComments = commentlist.value || []
@@ -52,6 +84,13 @@ function increase() {
 function decrease() {
   currentPage.value -= 1
 }
+
+function deleteCommentHandle(commentId: number) {
+  CommentService.deleteComment(commentId).then((response) => {
+    console.log(response.status)
+    fetchComments()
+  })
+}
 </script>
 
 <template>
@@ -62,8 +101,8 @@ function decrease() {
         Discussion about <span class="font-bold"> "{{ news?.topic }}"</span>
       </div>
       <div class="flex flex-wrap gap-4 mt-2">
-        <div id="upvoke " class="text-green-600">{{ news?.verifiedVoteCount }} real votes</div>
-        <div id="downvoke" class="text-red-600">{{ news?.fakeVoteCount }} fake votes</div>
+        <div id="upvoke " class="text-green-600">{{ realVote }} real votes</div>
+        <div id="downvoke" class="text-red-600">{{ fakeVote }} fake votes</div>
         <div id="status" class="px-2" v-if="news?.status == 1">
           <div class="bg-green-600 rounded-md text-center text-white">Verified</div>
         </div>
@@ -82,6 +121,9 @@ function decrease() {
         class="mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-4"
         v-for="(cmt, index) in commentlist"
         :key="index"
+        :class="{
+          'opacity-50 italic pointer-events-none': cmt.deleted,
+        }"
       >
         <!-- Header -->
         <div class="flex items-center justify-between mb-3">
@@ -93,13 +135,26 @@ function decrease() {
             </div>
             {{ cmt.commenter }}
           </h3>
-          <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
+            <button
+              v-if="isAdmin && !cmt.deleted"
+              class="text-red-500 hover:text-red-700 text-sm font-medium"
+              @click="deleteCommentHandle(cmt.id!)"
+            >
+              Delete
+            </button>
+
+            <!-- <pre>{{ cmt }}</pre> -->
+          </div>
         </div>
 
         <!-- Comment -->
         <p class="text-gray-700 leading-relaxed text-sm">
-          {{ cmt.comment }}
+          {{ cmt.comment }} <br />
+          <span class="italic text-red-600" v-if="cmt.deleted">This comment has been deleted!</span>
         </p>
+
         <div class="mt-2">
           <img
             v-if="cmt.imgLink"

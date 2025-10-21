@@ -26,12 +26,13 @@ export interface NewsListState {
 }
 
 export interface Comment {
-  id: number
-  newsId: number
-  commenter: string
-  date: Date
+  id?: number
+  newsId?: number
+  commenter?: User
+  date?: Date
   comment: string
   imgLink?: string
+  deleted?: boolean
 }
 
 export interface CommentListState {
@@ -44,8 +45,38 @@ export interface Vote {
   voteReason?: string
   createdAt?: Date
 }
-
+export interface VoteData {
+  realVoteCount: number
+  fakeVoteCount: number
+}
 export enum VoteType {
   Fake = 1,
   Real = 0,
+}
+
+export interface VoteDataState {
+  voteData: VoteData | null
+}
+
+// Temporarily defined for implementing authorization
+
+export enum UserRoles {
+  ROLE_READER = 'ROLE_READER',
+  ROLE_MEMBER = 'ROLE_MEMBER',
+  ROLE_ADMIN = 'ROLE_ADMIN',
+}
+export interface User {
+  id: number
+  name: string
+  surname: string
+  username?: string
+  email: string
+  imageUrl: string
+  roles: UserRoles[]
+  postedNews?: News[]
+  postedComments?: Comment[]
+}
+
+export interface UserState {
+  user: User | null
 }

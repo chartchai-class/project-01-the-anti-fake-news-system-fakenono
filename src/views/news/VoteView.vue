@@ -1,32 +1,41 @@
 <script setup lang="ts">
+import { isAuthorize } from '@/authorizationHelper'
+import ImageUpload from '@/components/ImageUpload.vue'
 import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import CommentService from '@/services/CommentService'
 import VoteCommentService from '@/services/VoteCommentService'
-import { useCommentListStore } from '@/stores/commentlists'
+import { useAuthStore } from '@/stores/auth'
+import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import { VoteType, type Comment, type Vote } from '@/types'
+// import { useUserStore } from '@/stores/tempUser'
+import { useVoteDataStore } from '@/stores/votesTrackList'
+import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
-const commentStore = useCommentListStore()
-storeToRefs(commentStore)
-//storeToRefs(votetrackStore)
 const voteType = ref<number>(0)
 const comment = ref<string>('')
 const posted = ref<boolean>(false)
 const notiString = ref<string>('')
-const imgLink = ref<string>('')
-const realVotes = computed(() => news.value?.verifiedVoteCount || 0)
-const fakeVotes = computed(() => news.value?.fakeVoteCount || 0)
+const imgLink = ref<string[]>([])
+const realVotes = computed(() => voteDataStore.voteData?.realVoteCount || 0)
+const fakeVotes = computed(() => voteDataStore.voteData?.fakeVoteCount || 0)
 const voteToPost = ref<Vote>({ voteType: VoteType.Fake })
-const commentToPost = ref<Comment>({ comment: '' })
+const commentToPost = ref<Comment>({
+  comment: '',
+})
+//Get news id
 const props = defineProps<{ id: number }>()
 
-// If comment is empty , not allowed to vote
+const isAuthorized = computed(() => {
+  return isAuthorize([UserRoles.ROLE_READER])
+})
+const commentCountStore = useCommentCountStore()
+const voteDataStore = useVoteDataStore()
 const btnDisable = computed(() => {
   if (comment.value.trim() == '') {
     return true
@@ -34,15 +43,15 @@ const btnDisable = computed(() => {
   return false
 })
 
+onMounted(() => {
+  voteDataStore.setVotes(props.id)
+})
 /**
  * Should add function to check whether user is reader or unknown
  * If reader , check whether he/she already has voted on this news
  * If voted , shown Something instead of vote form
  */
-
-function clickBtn() {
-  nProgress.start()
-  posted.value = true
+function validateInput() {
   console.log('Vote:', voteType.value)
   if (voteType.value == 0) {
     voteToPost.value.voteType = VoteType.Real
@@ -51,6 +60,10 @@ function clickBtn() {
   }
   console.log('VoteType:', voteToPost.value.voteType)
   commentToPost.value.comment = comment.value
+  commentToPost.value.imgLink = imgLink.value[0]
+    ? imgLink.value[0]
+    : 'https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png'
+  // commentToPost.value.commenter = useUserStore().user!
 
   if (commentToPost.value.comment == '') {
     console.log('Comment not filled!')
@@ -59,33 +72,48 @@ function clickBtn() {
     setTimeout(() => {
       posted.value = false
     }, 3000)
+    return false
+  }
+  return true
+}
+function clickBtn() {
+  nProgress.start()
+  posted.value = true
+
+  if (!validateInput()) {
     return
   }
 
   // news id received from props from layoutview, in router
   const tempNewsId = props.id
+  const user = useAuthStore().user
   console.log('Posted Comment:', comment.value)
-  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, tempNewsId).then(
-    (response) => {
-      console.log(response.status, 'Post Done')
-      notiString.value = ' Your vote has been recorded.'
-      CommentService.getNewsById(tempNewsId).then((response) => {
-        newsStore.setNews(response.data)
-      })
-      nProgress.done()
+  VoteCommentService.postVoteAndComment(
+    commentToPost.value,
+    voteToPost.value,
+    tempNewsId,
+    user!,
+  ).then((response) => {
+    console.log(response.status, 'Post Done')
+    notiString.value = ' Your vote has been recorded.'
+    CommentService.getNewsById(tempNewsId).then((response) => {
+      newsStore.setNews(response.data)
+    })
+    commentCountStore.setCount(tempNewsId)
+    voteDataStore.setVotes(tempNewsId)
+    nProgress.done()
 
-      voteType.value = 0
-      comment.value = ''
-      imgLink.value = ''
-      scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
-      setTimeout(() => {
-        posted.value = false
-      }, 3000)
-    },
-  )
+    voteType.value = 0
+    comment.value = ''
+    imgLink.value = []
+    scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    setTimeout(() => {
+      posted.value = false
+    }, 3000)
+  })
 }
 </script>
 
@@ -106,7 +134,7 @@ function clickBtn() {
         </div>
       </div>
 
-      <div id="form" class="bg-white p-6 space-y-5">
+      <div id="form" class="bg-white p-6 space-y-5" v-if="isAuthorized">
         <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
 
         <!-- Authentic option -->
@@ -158,6 +186,7 @@ function clickBtn() {
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
           />
+          <ImageUpload v-model="imgLink" :multiple="false" :max="1" />
         </div>
         <button
           @click="clickBtn"
@@ -169,6 +198,31 @@ function clickBtn() {
         </button>
         <!-- <div v-if="btnDisable">Please Fill Al</div> -->
       </div>
+      <div id="form" class="bg-white p-6 space-y-5" v-else>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">
+          You must be logged in to vote on this article
+        </h2>
+        <p class="text-gray-600 mb-4">
+          Please log in or create an account to share your opinion and help verify news
+          authenticity.
+        </p>
+
+        <div class="flex gap-4">
+          <RouterLink
+            to="/login"
+            class="px-5 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
+          >
+            Log In
+          </RouterLink>
+
+          <RouterLink
+            to="/register"
+            class="px-5 py-2 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-600 hover:text-white transition duration-200"
+          >
+            Register
+          </RouterLink>
+        </div>
+      </div>
     </div>
 
     <div
@@ -178,11 +232,11 @@ function clickBtn() {
         <h2 class="font-semibold text-xl mb-5">Current Stats</h2>
         <div id="realCount" class="flex gap-10 mb-4">
           <span>Real Votes:</span>
-          <span>{{ news?.verifiedVoteCount }}</span>
+          <span>{{ realVotes }}</span>
         </div>
         <div id="fakeCount" class="flex gap-10 mb-4">
           <span>Fake Votes:</span>
-          <span>{{ news?.fakeVoteCount }}</span>
+          <span>{{ fakeVotes }}</span>
         </div>
         <div id="status" class="flex gap-10 mb-4">
           <span>Status:</span>
