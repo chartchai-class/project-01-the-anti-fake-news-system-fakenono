@@ -4,8 +4,8 @@ import { useVoteDataStore } from '@/stores/votesTrackList'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted } from 'vue'
 
-const store = useNewsStore()
-const { news } = storeToRefs(store)
+const newsStore = useNewsStore()
+const { news } = storeToRefs(newsStore)
 const voteDataStore = useVoteDataStore()
 const realVote = computed(() => {
   return voteDataStore.voteData?.realVoteCount

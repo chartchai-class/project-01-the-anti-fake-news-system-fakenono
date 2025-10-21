@@ -56,8 +56,6 @@ function fetchComments() {
   )
 }
 
-// Slice comments for current page
-
 const hasNextPage = () => {
   return currentPage.value < pages.value
 }

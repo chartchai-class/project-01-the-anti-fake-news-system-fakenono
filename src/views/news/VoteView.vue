@@ -60,7 +60,6 @@ function validateInput() {
   console.log('VoteType:', voteToPost.value.voteType)
   commentToPost.value.comment = comment.value
   commentToPost.value.imageLink = imgLink.value[0]
-  // commentToPost.value.commenter = useUserStore().user!
 
   if (commentToPost.value.comment == '') {
     console.log('Comment not filled!')
