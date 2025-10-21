@@ -1,8 +1,9 @@
-import { useUserStore } from './stores/tempUser'
+//import { useUserStore } from './stores/tempUser'
+import { useAuthStore } from './stores/auth'
 import { UserRoles } from './types'
 
 export const isAuthorize = (userRole: UserRoles[]) => {
-  const userStore = useUserStore()
+  const userStore = useAuthStore()
   if (!userStore.user) {
     return false
   }

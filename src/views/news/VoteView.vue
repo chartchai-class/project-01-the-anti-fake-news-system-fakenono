@@ -5,9 +5,10 @@ import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import CommentService from '@/services/CommentService'
 import VoteCommentService from '@/services/VoteCommentService'
+import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import { useUserStore } from '@/stores/tempUser'
+// import { useUserStore } from '@/stores/tempUser'
 import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
@@ -85,7 +86,7 @@ function clickBtn() {
 
   // news id received from props from layoutview, in router
   const tempNewsId = props.id
-  const user = useUserStore().user
+  const user = useAuthStore().user
   console.log('Posted Comment:', comment.value)
   VoteCommentService.postVoteAndComment(
     commentToPost.value,

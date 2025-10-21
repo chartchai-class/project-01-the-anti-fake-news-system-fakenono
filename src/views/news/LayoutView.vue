@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { isAuthorize } from '@/authorizationHelper'
 import CommentService from '@/services/CommentService'
+import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-import { useUserStore } from '@/stores/tempUser'
-import { computed, onMounted, watchEffect } from 'vue'
+import { UserRoles } from '@/types'
+//import { useUserStore } from '@/stores/tempUser'
+import { computed, onMounted, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const tempId = parseInt(useRoute().params.id.toString())
@@ -12,26 +15,31 @@ const totalCommentCount = computed(() => {
   return commentCountStore.count
 })
 const useNewStore = useNewsStore()
-const userStore = useUserStore()
+const authStore = useAuthStore()
 const commentCountStore = useCommentCountStore()
+const isAdmin = computed(() => {
+  return isAuthorize([UserRoles.ROLE_ADMIN])
+})
 
 //Need to remove when Login page is created
 const tempLoginHandle = () => {
-  CommentService.loginTemp().then((reponse) => {
-    localStorage.setItem('access_token', reponse.data.access_token)
-    userStore.setUser(reponse.data.user)
-  })
+  // CommentService.loginTemp().then((reponse) => {
+  //   localStorage.setItem('access_token', reponse.data.access_token)
+  //   userStore.setUser(reponse.data.user)
+  // })
+  authStore.login('user', 'user') //to remove later
 }
 const tempLogoutHandle = () => {
-  userStore.clearUser()
-  localStorage.clear()
+  // userStore.clearUser()
+  // localStorage.clear()
+  authStore.logout()
 }
 onMounted(() => {
   // Need to change , when news part is finished
 
-  userStore.reloadUserFromStorages()
+  //userStore.reloadUserFromStorages()
 
-  console.log('User', userStore.user)
+  console.log('User', authStore.user)
   watchEffect(() => {
     console.log('News ID:', tempId)
     CommentService.getNewsById(tempId)
@@ -44,6 +52,9 @@ onMounted(() => {
         console.log(err)
         router.push({ name: '404-resource-view', params: { resource: 'News' } })
       })
+    commentCountStore.setCount(tempId)
+  })
+  watch(isAdmin, () => {
     commentCountStore.setCount(tempId)
   })
 })
