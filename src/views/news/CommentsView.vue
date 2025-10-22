@@ -56,6 +56,7 @@ function fetchComments() {
       commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
       voteDataStore.setVotes(props.id)
       voteDataStore.setVotes(props.id)
+      // News need to be refetched
     },
   )
 }

@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import NewsCardListForm from '@/components/NewsCardListForm.vue'
 import NewsService from '@/services/NewsService'
+import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { UserRoles, type News } from '@/types'
 import { EnvelopeIcon } from '@heroicons/vue/16/solid'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const user = authStore.user
 const router = useRouter()
 const postedNews = ref<News[]>([])
+const postedNewsCount = computed(() => {
+  return postedNews.value.length
+})
+const totalVoteCount = ref<number>()
 
 onMounted(() => {
   if (!user) {
@@ -19,6 +24,9 @@ onMounted(() => {
   NewsService.getNewsByUserId(user!.id).then((response) => {
     postedNews.value = response.data
   })
+  VoteCommentService.getVoteByUserId(user!.id).then((response) => {
+    totalVoteCount.value = Number(response.data)
+  })
 })
 const image_url =
   user?.imageUrl ??
@@ -26,35 +34,16 @@ const image_url =
 </script>
 
 <template>
+  <div class="p-10 pt-5 pb-5 text-center md:text-left">
+    <RouterLink
+      :to="{ name: 'home' }"
+      class="sm:px-4 px-1 py-2 bg-white text-black font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 m-10 mt-10 border border-black"
+    >
+      <span class="font-bold text-xl hidden md:inline-block"> &larr; </span
+      ><span class="hidden md:inline">&nbsp;&nbsp;</span> Back To Home</RouterLink
+    >
+  </div>
   <div class="md:w-[80%] w-[95%] mx-auto mt-10">
-    <!-- <div class="user-detail flex flex-row w-[100%]">
-      <div class="profile-image w-[10%]">
-        <img :src="image_url" alt="profile image" class="w-[90%]" />
-      </div>
-      <div class="detail w-[100%]">
-        <div>
-          <div class="name">{{ user?.name }} {{ user?.roles }}</div>
-          <div class="username">@{{ user?.username }}</div>
-          <div class="email">
-            <span>{{ user?.email }}</span> <span>Joined at {{ user?.createdAt }}</span>
-          </div>
-        </div>
-        <div class="flex flex-row w-[100%] text-center">
-          <div class="w-[20%] mx-2">
-            <div class="card bg-slate-200 p-4 py-6">
-              <div class="text">1</div>
-              <div>News Posted</div>
-            </div>
-          </div>
-          <div class="w-[20%] mx-2">
-            <div class="card bg-zinc-200 p-4 py-6">
-              <div class="">2</div>
-              <div>Votes Cast</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div
       class="user-detail flex flex-col sm:flex-row items-center sm:items-start bg-white rounded-2xl shadow-md p-6 w-full max-w-4xl mx-auto"
     >
@@ -104,11 +93,11 @@ const image_url =
         <!-- Stats Cards -->
         <div class="flex justify-center sm:justify-start flex-wrap gap-3 mt-6 text-center">
           <div class="bg-slate-100 rounded-xl px-5 py-4 shadow-sm w-30">
-            <div class="text-xl font-semibold text-gray-800">1</div>
+            <div class="text-xl font-semibold text-gray-800">{{ postedNewsCount }}</div>
             <div class="text-sm text-gray-500">News Posted</div>
           </div>
           <div class="bg-slate-100 rounded-xl px-5 py-4 shadow-sm w-28">
-            <div class="text-xl font-semibold text-gray-800">2</div>
+            <div class="text-xl font-semibold text-gray-800">{{ totalVoteCount }}</div>
             <div class="text-sm text-gray-500">Votes Cast</div>
           </div>
         </div>

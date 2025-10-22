@@ -12,4 +12,7 @@ export default {
   getVote(newsId: number) {
     return apiClient.get('/votes-by-news-id/' + newsId)
   },
+  getVoteByUserId(userId: number) {
+    return apiClient.get('/vote-count-by-user-id/' + userId)
+  },
 }
