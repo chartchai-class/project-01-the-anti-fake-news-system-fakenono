@@ -13,6 +13,9 @@ export default {
   deleteNews(id: number) {
     return apiClient.delete(`/news/${id}`)
   },
+  getNewsByUserId(userId: number) {
+    return apiClient.get(`/news/user/${userId}`)
+  },
 }
 
 // const apiClient = axios.create({

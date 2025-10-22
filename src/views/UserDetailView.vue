@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import NewsCardListForm from '@/components/NewsCardListForm.vue'
+import NewsService from '@/services/NewsService'
 import { useAuthStore } from '@/stores/auth'
-import { UserRoles } from '@/types'
+import { UserRoles, type News } from '@/types'
 import { EnvelopeIcon } from '@heroicons/vue/16/solid'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const user = authStore.user
 const router = useRouter()
+const postedNews = ref<News[]>([])
 
 onMounted(() => {
   if (!user) {
     router.push({ name: '404-resource-view', params: { resource: 'User' } })
   }
+  NewsService.getNewsByUserId(user!.id).then((response) => {
+    postedNews.value = response.data
+  })
 })
 const image_url =
   user?.imageUrl ??
@@ -88,7 +93,7 @@ const image_url =
           </div>
           <div class="text-gray-500">@{{ user?.username }}</div>
           <div class="text-sm text-gray-600">
-            <EnvelopeIcon class="h-6 w-6 text-black" />
+            <EnvelopeIcon class="h-6 w-6 text-black inline" />
             <span>{{ user?.email }}</span> •
             <span class="text-gray-400"
               >Joined since {{ new Date(user!.createdAt).toLocaleDateString() }}</span
@@ -117,7 +122,7 @@ const image_url =
         Posted News
       </h2>
 
-      <div v-for="news in user?.postedNews" :key="news.id" class="news-list">
+      <div v-for="news in postedNews" :key="news.id" class="news-list">
         <NewsCardListForm :news="news" />
       </div>
     </div>
