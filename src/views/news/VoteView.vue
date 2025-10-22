@@ -47,6 +47,16 @@ onMounted(() => {
   voteDataStore.setVotes(props.id)
 })
 const isFocus = ref<boolean>(false)
+const authUser = useAuthStore()
+const newsReporter = computed(() => {
+  return news.value?.reporter
+})
+
+const isOwnNews = computed(() => {
+  return authUser.user?.id == newsReporter.value?.id
+})
+const uploader = ref<InstanceType<typeof ImageUpload> | null>(null)
+
 /**
  * Should add function to check whether user is reader or unknown
  * If reader , check whether he/she already has voted on this news
@@ -101,6 +111,8 @@ function clickBtn() {
       voteType.value = 0
       comment.value = ''
       imgLink.value = []
+      uploader.value.resetUploader()
+
       // scrollTo({
       //   top: 0,
       //   behavior: 'smooth',
@@ -130,7 +142,7 @@ function clickBtn() {
         </div>
       </div>
 
-      <div id="form" class="bg-white p-6 space-y-5" v-if="isAuthorized">
+      <div id="form" class="bg-white p-6 space-y-5" v-if="isAuthorized && !isOwnNews">
         <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
 
         <!-- Authentic option -->
@@ -186,7 +198,7 @@ function clickBtn() {
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
           />
-          <ImageUpload v-model="imgLink" :multiple="false" :max="1" />
+          <ImageUpload v-model="imgLink" :multiple="false" :max="1" ref="uploader" />
         </div>
         <button
           @click="clickBtn"
@@ -198,6 +210,13 @@ function clickBtn() {
         </button>
         <!-- <div v-if="btnDisable">Please Fill Al</div> -->
       </div>
+      <div
+        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
+        v-else-if="isOwnNews"
+      >
+        <p><strong>Note:</strong> You are the author of this news. Voting is disabled for you.</p>
+      </div>
+
       <div id="form" class="bg-white p-6 space-y-5" v-else>
         <h2 class="text-lg font-semibold text-gray-900 mb-2">
           You must be logged in to vote on this article
