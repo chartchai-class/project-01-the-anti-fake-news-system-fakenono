@@ -4,8 +4,8 @@ import { useVoteDataStore } from '@/stores/votesTrackList'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted } from 'vue'
 
-const store = useNewsStore()
-const { news } = storeToRefs(store)
+const newsStore = useNewsStore()
+const { news } = storeToRefs(newsStore)
 const voteDataStore = useVoteDataStore()
 const realVote = computed(() => {
   return voteDataStore.voteData?.realVoteCount
@@ -14,7 +14,7 @@ const fakeVote = computed(() => {
   return voteDataStore.voteData?.fakeVoteCount
 })
 const props = defineProps<{ id: number }>()
-function formatDate(datetime: string): string {
+function formatDate(datetime: Date): string {
   const date = new Date(datetime)
   return date.toLocaleString('en-US', {
     weekday: 'short',
@@ -26,7 +26,7 @@ function formatDate(datetime: string): string {
   })
 }
 onMounted(() => {
-  voteDataStore.setVotes(props.id)
+  voteDataStore.setVotes(props.id) //newsId
 })
 </script>
 

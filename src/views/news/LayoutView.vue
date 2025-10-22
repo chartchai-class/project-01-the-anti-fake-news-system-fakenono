@@ -5,16 +5,15 @@ import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { UserRoles } from '@/types'
-//import { useUserStore } from '@/stores/tempUser'
-import { computed, onMounted, watch, watchEffect } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const tempId = parseInt(useRoute().params.id.toString())
+const newsId = parseInt(useRoute().params.id.toString())
 const router = useRouter()
 const totalCommentCount = computed(() => {
   return commentCountStore.count
 })
-const useNewStore = useNewsStore()
+const newsStore = useNewsStore()
 const authStore = useAuthStore()
 const commentCountStore = useCommentCountStore()
 const isAdmin = computed(() => {
@@ -23,41 +22,36 @@ const isAdmin = computed(() => {
 
 //Need to remove when Login page is created
 const tempLoginHandle = () => {
-  // CommentService.loginTemp().then((reponse) => {
-  //   localStorage.setItem('access_token', reponse.data.access_token)
-  //   userStore.setUser(reponse.data.user)
-  // })
-  authStore.login('user', 'user') //to remove later
+  authStore.login('admin', 'admin') //to remove later
 }
 const tempLogoutHandle = () => {
-  // userStore.clearUser()
-  // localStorage.clear()
   authStore.logout()
 }
 onMounted(() => {
-  // Need to change , when news part is finished
-
-  //userStore.reloadUserFromStorages()
-
   console.log('User', authStore.user)
-  watchEffect(() => {
-    console.log('News ID:', tempId)
-    CommentService.getNewsById(tempId)
-      .then((response) => {
-        useNewStore.setNews(response.data)
-        // setStatus(useNewStore.news)
-        console.log(useNewStore.news)
-      })
-      .catch((err) => {
-        console.log(err)
-        router.push({ name: '404-resource-view', params: { resource: 'News' } })
-      })
-    commentCountStore.setCount(tempId)
-  })
-  watch(isAdmin, () => {
-    commentCountStore.setCount(tempId)
-  })
+  loadNews()
+  watch(
+    isAdmin,
+    () => {
+      commentCountStore.setCount(newsId)
+    },
+    {
+      immediate: true,
+    },
+  )
 })
+
+function loadNews() {
+  CommentService.getNewsById(newsId) //This should use NewService
+    .then((response) => {
+      newsStore.setNews(response.data)
+      console.log(newsStore.news)
+    })
+    .catch((err) => {
+      console.log(err)
+      router.push({ name: '404-resource-view', params: { resource: 'News' } })
+    })
+}
 </script>
 
 <template>
@@ -66,7 +60,8 @@ onMounted(() => {
       :to="{ name: 'home' }"
       class="sm:px-4 px-1 py-2 bg-white text-black font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 m-10 mt-10 border border-black"
     >
-      <span class="font-bold text-xl"> &larr; </span>&nbsp;&nbsp; Back To Home</RouterLink
+      <span class="font-bold text-xl hidden md:inline-block"> &larr; </span
+      ><span class="hidden md:inline">&nbsp;&nbsp;</span> Back To Home</RouterLink
     >
   </div>
 

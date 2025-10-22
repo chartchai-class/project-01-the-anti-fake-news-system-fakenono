@@ -5,6 +5,7 @@ import LayoutView from '@/views/news/LayoutView.vue'
 import VoteView from '@/views/news/VoteView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import PostView from '@/views/PostView.vue'
+import UserDetailView from '@/views/UserDetailView.vue'
 import nProgress from 'nprogress'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/post',
       name: 'news-post-view',
       component: PostView,
+    },
+    {
+      path: '/user',
+      name: 'user-detail-view',
+      component: UserDetailView,
     },
     {
       path: '/404/:resource',

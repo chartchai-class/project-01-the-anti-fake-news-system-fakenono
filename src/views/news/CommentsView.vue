@@ -4,9 +4,10 @@ import CommentService from '@/services/CommentService'
 import { useCommentCountStore, useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { useVoteDataStore } from '@/stores/votesTrackList'
-import { UserRoles } from '@/types'
+import { NewsStatus, UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
@@ -21,7 +22,7 @@ const pages = computed(() => {
   return Math.ceil((totalCommentCount.value ?? 0) / perPage.value)
 })
 const currentPage = ref(1)
-const props = defineProps<{ id: number }>()
+const props = defineProps<{ id: number }>() //newsId
 const isAdmin = computed(() => {
   return isAuthorize([UserRoles.ROLE_ADMIN])
 })
@@ -33,20 +34,18 @@ const realVote = computed(() => {
 const fakeVote = computed(() => {
   return voteDataStore.voteData?.fakeVoteCount
 })
+
+const toast = useToast()
+
 onMounted(() => {
   watchEffect(() => {
-    console.log('PerPage:', perPage.value)
-    console.log('CurrentPage:', currentPage.value)
+    //This will refetch when perPage and page changes
     fetchComments()
   })
   watch(isAdmin, () => {
+    //This will refetch when isAdmin changes
     currentPage.value = 1
-    CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
-      (response) => {
-        commentlist.value = response.data
-        commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
-      },
-    )
+    fetchComments()
   })
 })
 
@@ -54,21 +53,12 @@ function fetchComments() {
   CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
     (response) => {
       commentlist.value = response.data
-      // totalCommentCount.value = parseInt(response.headers['x-total-count'])
       commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
       voteDataStore.setVotes(props.id)
       voteDataStore.setVotes(props.id)
     },
   )
 }
-
-// Slice comments for current page
-const paginatedComments = computed(() => {
-  const allComments = commentlist.value || []
-  const start = (currentPage.value - 1) * perPage.value
-  const end = start + perPage.value
-  return allComments.slice(start, end)
-})
 
 const hasNextPage = () => {
   return currentPage.value < pages.value
@@ -87,6 +77,7 @@ function decrease() {
 
 function deleteCommentHandle(commentId: number) {
   CommentService.deleteComment(commentId).then((response) => {
+    toast.success('The comment has been successfully deleted!')
     console.log(response.status)
     fetchComments()
   })
@@ -103,13 +94,13 @@ function deleteCommentHandle(commentId: number) {
       <div class="flex flex-wrap gap-4 mt-2">
         <div id="upvoke " class="text-green-600">{{ realVote }} real votes</div>
         <div id="downvoke" class="text-red-600">{{ fakeVote }} fake votes</div>
-        <div id="status" class="px-2" v-if="news?.status == 1">
+        <div id="status" class="px-2" v-if="news?.status == NewsStatus.Verified">
           <div class="bg-green-600 rounded-md text-center text-white">Verified</div>
         </div>
-        <div id="status" class="px-2" v-if="news?.status == 0">
+        <div id="status" class="px-2" v-if="news?.status == NewsStatus.Fake">
           <div class="bg-red-600 rounded-md text-center text-white">Fake</div>
         </div>
-        <div id="status" class="px-2" v-if="news?.status == 2">
+        <div id="status" class="px-2" v-if="news?.status == NewsStatus.Pending">
           <div class="bg-gray-600 rounded-md text-center text-white">Pending</div>
         </div>
 
@@ -136,7 +127,9 @@ function deleteCommentHandle(commentId: number) {
             {{ cmt.commenter }}
           </h3>
           <div class="flex flex-col">
-            <span class="text-sm text-gray-500">{{ new Date(cmt.date).toLocaleDateString() }}</span>
+            <span class="text-sm text-gray-500">{{
+              new Date(cmt.date!).toLocaleDateString()
+            }}</span>
             <button
               v-if="isAdmin && !cmt.deleted"
               class="text-red-500 hover:text-red-700 text-sm font-medium"
@@ -144,8 +137,6 @@ function deleteCommentHandle(commentId: number) {
             >
               Delete
             </button>
-
-            <!-- <pre>{{ cmt }}</pre> -->
           </div>
         </div>
 
@@ -157,14 +148,14 @@ function deleteCommentHandle(commentId: number) {
 
         <div class="mt-2">
           <img
-            v-if="cmt.imgLink"
-            :src="cmt.imgLink"
+            v-if="cmt.imageLink"
+            :src="cmt.imageLink"
             alt="Comment Image"
             class="max-w-full rounded-md w-[200px]"
           />
           <br />
-          <span class="text-sm text-gray-500" v-if="cmt.imgLink"
-            ><a :href="cmt.imgLink" target="_blank">View Image</a></span
+          <span class="text-sm text-gray-500" v-if="cmt.imageLink"
+            ><a :href="cmt.imageLink" target="_blank">View Image</a></span
           >
         </div>
       </div>

@@ -8,12 +8,12 @@ import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
-// import { useUserStore } from '@/stores/tempUser'
 import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
@@ -42,10 +42,11 @@ const btnDisable = computed(() => {
   }
   return false
 })
-
+const toast = useToast()
 onMounted(() => {
   voteDataStore.setVotes(props.id)
 })
+const isFocus = ref<boolean>(false)
 /**
  * Should add function to check whether user is reader or unknown
  * If reader , check whether he/she already has voted on this news
@@ -60,10 +61,7 @@ function validateInput() {
   }
   console.log('VoteType:', voteToPost.value.voteType)
   commentToPost.value.comment = comment.value
-  commentToPost.value.imgLink = imgLink.value[0]
-    ? imgLink.value[0]
-    : 'https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png'
-  // commentToPost.value.commenter = useUserStore().user!
+  commentToPost.value.imageLink = imgLink.value[0]
 
   if (commentToPost.value.comment == '') {
     console.log('Comment not filled!')
@@ -78,42 +76,40 @@ function validateInput() {
 }
 function clickBtn() {
   nProgress.start()
-  posted.value = true
+  // posted.value = true
 
   if (!validateInput()) {
     return
   }
 
   // news id received from props from layoutview, in router
-  const tempNewsId = props.id
+  const newsId = props.id
   const user = useAuthStore().user
   console.log('Posted Comment:', comment.value)
-  VoteCommentService.postVoteAndComment(
-    commentToPost.value,
-    voteToPost.value,
-    tempNewsId,
-    user!,
-  ).then((response) => {
-    console.log(response.status, 'Post Done')
-    notiString.value = ' Your vote has been recorded.'
-    CommentService.getNewsById(tempNewsId).then((response) => {
-      newsStore.setNews(response.data)
-    })
-    commentCountStore.setCount(tempNewsId)
-    voteDataStore.setVotes(tempNewsId)
-    nProgress.done()
+  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, newsId, user!).then(
+    (response) => {
+      console.log(response.status, 'Post Done')
+      notiString.value = ' Your vote has been recorded.'
+      CommentService.getNewsById(newsId).then((response) => {
+        newsStore.setNews(response.data)
+      })
+      commentCountStore.setCount(newsId)
+      voteDataStore.setVotes(newsId)
+      nProgress.done()
+      toast.success('Your vote has been saved!')
 
-    voteType.value = 0
-    comment.value = ''
-    imgLink.value = []
-    scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
-    setTimeout(() => {
-      posted.value = false
-    }, 3000)
-  })
+      voteType.value = 0
+      comment.value = ''
+      imgLink.value = []
+      // scrollTo({
+      //   top: 0,
+      //   behavior: 'smooth',
+      // })
+      setTimeout(() => {
+        posted.value = false
+      }, 3000)
+    },
+  )
 }
 </script>
 
@@ -171,7 +167,9 @@ function clickBtn() {
         <!-- Comment box -->
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-gray-900">Reason for your assessment</h2>
-          <div v-if="comment.trim() == ''" class="text-red-500">This field is required</div>
+          <div v-if="comment.trim() == '' && isFocus" class="text-red-500">
+            This field is required
+          </div>
 
           <textarea
             rows="4"
@@ -179,6 +177,8 @@ function clickBtn() {
             placeholder="Share your reasoning..."
             v-model="comment"
             required
+            @focus="isFocus = true"
+            @blur="isFocus = false"
           ></textarea>
           <input
             type="text"
