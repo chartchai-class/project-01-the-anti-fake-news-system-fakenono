@@ -19,13 +19,13 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     currentUserName(): string {
-      return this.user?.name || ''
+      return this.user?.username || ''
     },
     isAdmin(): boolean {
       return this.user?.roles.includes(UserRoles.ROLE_ADMIN) || false
     },
     authorizationHeader(): string {
-      return `Bearer ${this.token}`
+      return this.token
     },
   },
   actions: {

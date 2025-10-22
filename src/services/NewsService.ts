@@ -1,13 +1,4 @@
-import axios from 'axios'
-
-const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-  withCredentials: false,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-})
+import apiClient from '@/services/AxiosClient'
 
 export default {
   getNews(params) {
@@ -18,6 +9,9 @@ export default {
   },
   postNews(news: any) {
     return apiClient.post('/news', news)
+  },
+  deleteNews(id: number) {
+    return apiClient.delete(`/news/${id}`)
   },
 }
 
