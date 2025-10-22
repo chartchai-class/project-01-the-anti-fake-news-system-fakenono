@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { computed, ref } from 'vue'
 import Uploader from 'vue-media-upload'
 
 interface Props {
@@ -29,8 +30,19 @@ const uploadUrl = ref(import.meta.env.VITE_UPLOAD_URL)
 const onChanged = (files: any) => {
   emit('update:modelValue', convertMediaToString(files))
 }
+
+const authStore = useAuthStore()
+const authorizationHeader = computed(() => {
+  return { Authorization: authStore.authorizationHeader }
+})
 </script>
 
 <template>
-  <Uploader v-bind="$attrs" :server="uploadUrl" @change="onChanged" :media="media"></Uploader>
+  <Uploader
+    v-bind="$attrs"
+    :server="uploadUrl"
+    @change="onChanged"
+    :media="media"
+    :headers="authorizationHeader"
+  ></Uploader>
 </template>
