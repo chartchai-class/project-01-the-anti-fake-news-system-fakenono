@@ -24,6 +24,12 @@ export const useAuthStore = defineStore('auth', {
     isAdmin(): boolean {
       return this.user?.roles.includes(UserRoles.ROLE_ADMIN) || false
     },
+    isMember(): boolean {
+      return this.user?.roles.includes(UserRoles.ROLE_MEMBER) || false
+    },
+    isReader(): boolean {
+      return this.user?.roles.includes(UserRoles.ROLE_READER) || false
+    },
     authorizationHeader(): string {
       return this.token
     },
@@ -38,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
         .then((response) => {
           this.token = response.data.access_token
           this.user = response.data.user
-          localStorage.setItem('access_token', this.token as string)
+          localStorage.setItem('access_token', `Bearer ${this.token as string}`)
           localStorage.setItem('user', JSON.stringify(this.user))
           axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
           return response
