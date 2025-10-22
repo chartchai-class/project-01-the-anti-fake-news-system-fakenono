@@ -24,6 +24,12 @@ export const useAuthStore = defineStore('auth', {
     isAdmin(): boolean {
       return this.user?.roles.includes(UserRoles.ROLE_ADMIN) || false
     },
+    isMember(): boolean {
+      return this.user?.roles.includes(UserRoles.ROLE_MEMBER) || false
+    },
+    isReader(): boolean {
+      return this.user?.roles.includes(UserRoles.ROLE_READER) || false
+    },
     authorizationHeader(): string {
       return this.token
     },
