@@ -2,9 +2,11 @@
 import NewsCard from '@/components/NewsCard.vue'
 import NewsCardListForm from '@/components/NewsCardListForm.vue'
 import NewsService from '@/services/NewsService'
+import { useAuthStore } from '@/stores/auth'
 import { type News } from '@/types'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 const route = useRoute()
 const router = useRouter()
@@ -103,6 +105,31 @@ const view = ref('grid')
 function toggleView() {
   view.value = view.value === 'grid' ? 'list' : 'grid'
 }
+
+const authStore = useAuthStore()
+const isAdmin = authStore.isAdmin
+const toast = useToast()
+
+function handleDeleteNews(deletedNewsId: number) {
+  NewsService.deleteNews(deletedNewsId).then(
+    () => {
+      NewsService.getNews(params.value).then(
+        (response) => {
+          newslist.value = response.data
+          totalNewsCount.value = response.headers['x-total-count']
+        },
+        (error) => {
+          console.error('Failed to fetch news:', error)
+        },
+      )
+      toast.success('News deleted successfully.')
+    },
+    (error) => {
+      console.error('Failed to delete news:', error)
+      toast.error('Failed to delete news.')
+    },
+  )
+}
 </script>
 
 <template>
@@ -195,11 +222,23 @@ function toggleView() {
   </div>
 
   <div v-if="view === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 m-8">
-    <NewsCard v-for="newsItem in newslist" :key="newsItem.id" :news="newsItem" />
+    <NewsCard
+      v-for="newsItem in newslist"
+      :key="newsItem.id"
+      :news="newsItem"
+      :is-admin="isAdmin"
+      @delete-news="handleDeleteNews"
+    />
   </div>
 
   <div v-else class="flex flex-col justify-center m-2 md:m-8 gap-2">
-    <NewsCardListForm v-for="newsItem in newslist" :key="newsItem.id" :news="newsItem" />
+    <NewsCardListForm
+      v-for="newsItem in newslist"
+      :key="newsItem.id"
+      :news="newsItem"
+      :is-admin="isAdmin"
+      @delete-news="handleDeleteNews"
+    />
   </div>
 
   <div class="flex md:flex-row flex-col items-center justify-start m-6 ml-14 font-semibold">
