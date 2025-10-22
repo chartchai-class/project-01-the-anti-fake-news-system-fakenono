@@ -13,6 +13,7 @@ import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
@@ -41,10 +42,11 @@ const btnDisable = computed(() => {
   }
   return false
 })
-
+const toast = useToast()
 onMounted(() => {
   voteDataStore.setVotes(props.id)
 })
+const isFocus = ref<boolean>(false)
 /**
  * Should add function to check whether user is reader or unknown
  * If reader , check whether he/she already has voted on this news
@@ -74,7 +76,7 @@ function validateInput() {
 }
 function clickBtn() {
   nProgress.start()
-  posted.value = true
+  // posted.value = true
 
   if (!validateInput()) {
     return
@@ -94,14 +96,15 @@ function clickBtn() {
       commentCountStore.setCount(newsId)
       voteDataStore.setVotes(newsId)
       nProgress.done()
+      toast.success('Your vote has been saved!')
 
       voteType.value = 0
       comment.value = ''
       imgLink.value = []
-      scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
+      // scrollTo({
+      //   top: 0,
+      //   behavior: 'smooth',
+      // })
       setTimeout(() => {
         posted.value = false
       }, 3000)
@@ -164,7 +167,9 @@ function clickBtn() {
         <!-- Comment box -->
         <div class="space-y-2">
           <h2 class="text-lg font-semibold text-gray-900">Reason for your assessment</h2>
-          <div v-if="comment.trim() == ''" class="text-red-500">This field is required</div>
+          <div v-if="comment.trim() == '' && isFocus" class="text-red-500">
+            This field is required
+          </div>
 
           <textarea
             rows="4"
@@ -172,6 +177,8 @@ function clickBtn() {
             placeholder="Share your reasoning..."
             v-model="comment"
             required
+            @focus="isFocus = true"
+            @blur="isFocus = false"
           ></textarea>
           <input
             type="text"
