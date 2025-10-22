@@ -38,11 +38,6 @@ const authorizationHeader = computed(() => {
 </script>
 
 <template>
-  <Uploader
-    v-bind="$attrs"
-    :server="uploadUrl"
-    @change="onChanged"
-    :media="media"
-    :headers="authorizationHeader"
-  ></Uploader>
+  <Uploader v-bind="$attrs" :server="uploadUrl" @change="onChanged" :media="media" :headers="authorizationHeader">
+  </Uploader>
 </template>

@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 //import { registration } from '@/services/AuthService'
 //import axios from 'axios'
+import ImageUpload from '@/components/ImageUpload.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -14,6 +15,7 @@ const email = ref('')
 const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
+const imageUrl = ref<string[]>([])
 
 async function handleRegistration() {
   try {
@@ -22,7 +24,8 @@ async function handleRegistration() {
       surname.value,
       username.value,
       email.value,
-      password.value
+      password.value,
+      imageUrl.value[0] || ''
     )
     router.push('/login')
   } catch {
@@ -61,6 +64,11 @@ async function handleRegistration() {
         <input id="password" v-model="password" type="password" placeholder="Enter your password"
           class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
+      <div>
+        <label class="block text-lg font-semibold text-gray-700 mb-2">Profile Image</label>
+        <ImageUpload v-model="imageUrl" />
+      </div>
+
 
       <div class="text-center">
         <button type="submit"
