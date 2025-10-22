@@ -7,6 +7,7 @@ import { useVoteDataStore } from '@/stores/votesTrackList'
 import { NewsStatus, UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const newsStore = useNewsStore()
 const { news } = storeToRefs(newsStore)
@@ -33,6 +34,9 @@ const realVote = computed(() => {
 const fakeVote = computed(() => {
   return voteDataStore.voteData?.fakeVoteCount
 })
+
+const toast = useToast()
+
 onMounted(() => {
   watchEffect(() => {
     //This will refetch when perPage and page changes
@@ -73,6 +77,7 @@ function decrease() {
 
 function deleteCommentHandle(commentId: number) {
   CommentService.deleteComment(commentId).then((response) => {
+    toast.success('The comment has been successfully deleted!')
     console.log(response.status)
     fetchComments()
   })
