@@ -9,12 +9,13 @@ export interface News {
   topic: string
   details: string
   status?: NewsStatus
-  reporter: string
+  reporter: User
   datetime: Date
   image: string
   fakeVoteCount: number
   verifiedVoteCount: number
   comments: Comment[]
+  deleted: boolean
 }
 
 export interface NewsState {
@@ -69,7 +70,7 @@ export interface User {
   id: number
   name: string
   surname: string
-  username?: string
+  username: string
   email: string
   imageUrl: string
   roles: UserRoles[]

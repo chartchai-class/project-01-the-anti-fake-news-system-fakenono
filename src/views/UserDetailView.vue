@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import NewsCardListForm from '@/components/NewsCardListForm.vue'
 import { useAuthStore } from '@/stores/auth'
+import { UserRoles } from '@/types'
+import { EnvelopeIcon } from '@heroicons/vue/16/solid'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const user = authStore.user
 const router = useRouter()
+
 onMounted(() => {
   if (!user) {
     router.push({ name: '404-resource-view', params: { resource: 'User' } })
@@ -61,12 +65,34 @@ const image_url =
         <div class="space-y-1">
           <div class="text-2xl font-semibold text-gray-800">
             {{ user?.name }}
-            <span class="text-sm text-slate-500 font-normal">({{ user?.roles }})</span>
+            <span
+              v-if="user?.roles.includes(UserRoles.ROLE_ADMIN)"
+              class="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-full"
+            >
+              ADMIN
+            </span>
+
+            <span
+              v-else-if="user?.roles.includes(UserRoles.ROLE_MEMBER)"
+              class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-full"
+            >
+              MEMBER
+            </span>
+
+            <span
+              v-else-if="user?.roles.includes(UserRoles.ROLE_READER)"
+              class="px-3 py-1 text-sm font-medium text-gray-800 bg-gray-200 rounded-full"
+            >
+              READER
+            </span>
           </div>
           <div class="text-gray-500">@{{ user?.username }}</div>
           <div class="text-sm text-gray-600">
+            <EnvelopeIcon class="h-6 w-6 text-black" />
             <span>{{ user?.email }}</span> •
-            <span class="text-gray-400">Joined {{ user?.createdAt }}</span>
+            <span class="text-gray-400"
+              >Joined since {{ new Date(user!.createdAt).toLocaleDateString() }}</span
+            >
           </div>
         </div>
 
@@ -84,6 +110,16 @@ const image_url =
       </div>
     </div>
 
-    <div class="posted-news"></div>
+    <div
+      class="posted-news px-4 md:px-8 py-6 bg-gray-50 rounded-2xl shadow-sm w-full max-w-4xl mx-auto mt-2"
+    >
+      <h2 class="text-2xl font-semibold text-gray-800 mb-5 border-b border-gray-200 pb-2">
+        Posted News
+      </h2>
+
+      <div v-for="news in user?.postedNews" :key="news.id" class="news-list">
+        <NewsCardListForm :news="news" />
+      </div>
+    </div>
   </div>
 </template>
