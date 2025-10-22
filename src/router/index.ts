@@ -48,6 +48,16 @@ const router = createRouter({
       ],
     },
     {
+      path: '/login',
+      name: 'login-view',
+      component: () => import('@/views/authentication/LoginView.vue'),
+    },
+    {
+      path: '/registration',
+      name: 'registration-view',
+      component: () => import('@/views/authentication/RegistrationView.vue'),
+    },
+    {
       path: '/post',
       name: 'news-post-view',
       component: PostView,
@@ -68,6 +78,7 @@ const router = createRouter({
       name: 'not-found-view',
       component: NotFoundView,
     },
+
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
