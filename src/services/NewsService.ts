@@ -16,6 +16,9 @@ export default {
   getNewsByUserId(userId: number) {
     return apiClient.get(`/news/user/${userId}`)
   },
+  getHasCommented(newsId: number, userId: number) {
+    return apiClient.get(`/news/${newsId}/has-commented?userId=${userId}`)
+  },
 }
 
 // const apiClient = axios.create({
