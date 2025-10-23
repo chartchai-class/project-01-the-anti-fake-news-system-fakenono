@@ -82,3 +82,15 @@ export interface User {
 export interface UserState {
   user: User | null
 }
+
+export enum RoleRequestStatus {
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  PENDING = 'PENDING',
+}
+export interface RoleRequest {
+  id: number
+  reason?: string
+  requestStatus: RoleRequestStatus
+  requestedDate: Date
+}
