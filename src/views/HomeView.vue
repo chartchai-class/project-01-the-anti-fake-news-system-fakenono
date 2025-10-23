@@ -130,10 +130,26 @@ function handleDeleteNews(deletedNewsId: number) {
     },
   )
 }
+
+const keyword = ref('')
+watch(keyword, (newKeyword) => {
+  if (newKeyword.trim().length < 3) {
+    delete params.value['search']
+  } else {
+    params.value['search'] = newKeyword
+  }
+})
 </script>
 
 <template>
-  <div class="flex justify-end">
+  <div class="flex justify-between">
+    <input
+      type="text"
+      id="post-topic"
+      class="text-xs md:text-base border border-black p-2 rounded-lg w-full bg-black m-2 text-white font-semibold placeholder:font-semibold placeholder:text-gray-200"
+      placeholder="Search..."
+      v-model="keyword"
+    />
     <RouterLink
       :to="{ name: 'news-post-view' }"
       class="bg-black text-white p-2 px-3 rounded-lg m-2 font-bold text-xl flex flex-row justify-self-end"
