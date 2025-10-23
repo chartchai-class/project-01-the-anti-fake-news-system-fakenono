@@ -1,3 +1,4 @@
+import AdminDashboardView from '@/views/AdminDashboardView.vue'
 import HomeView from '@/views/HomeView.vue'
 import CommentsView from '@/views/news/CommentsView.vue'
 import DetailsView from '@/views/news/DetailsView.vue'
@@ -78,7 +79,11 @@ const router = createRouter({
       name: 'not-found-view',
       component: NotFoundView,
     },
-
+    {
+      path: '/dashboard',
+      name: 'admin-dashboard-view',
+      component: AdminDashboardView,
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

@@ -82,3 +82,17 @@ export interface User {
 export interface UserState {
   user: User | null
 }
+
+export interface DashboardStats {
+  newsCount: number
+  fakeNewsCount: number
+  verifiedNewsCount: number
+  pendingNewsCount: number
+  userCount: number
+  readersCount: number
+  membersCount: number
+  adminsCount: number
+  voteCount: number
+  fakeVotesCount: number
+  realVotesCount: number
+}
