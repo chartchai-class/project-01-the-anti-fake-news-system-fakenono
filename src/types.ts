@@ -96,3 +96,15 @@ export interface DashboardStats {
   fakeVotesCount: number
   realVotesCount: number
 }
+
+export enum RoleRequestStatus {
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  PENDING = 'PENDING',
+}
+export interface RoleRequest {
+  id: number
+  reason?: string
+  requestStatus: RoleRequestStatus
+  requestedDate: Date
+}
