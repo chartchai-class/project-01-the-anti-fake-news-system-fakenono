@@ -76,6 +76,7 @@ export interface User {
   roles: UserRoles[]
   postedNews?: News[]
   postedComments?: Comment[]
+  createdAt: Date
 }
 
 export interface UserState {

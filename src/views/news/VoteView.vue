@@ -4,6 +4,7 @@ import ImageUpload from '@/components/ImageUpload.vue'
 import PercentBar from '@/components/PercentBar.vue'
 import Thumb from '@/components/Thumb.vue'
 import CommentService from '@/services/CommentService'
+import NewsService from '@/services/NewsService'
 import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { useCommentCountStore } from '@/stores/commentlists'
@@ -43,10 +44,30 @@ const btnDisable = computed(() => {
   return false
 })
 const toast = useToast()
+const newsId = props.id
 onMounted(() => {
   voteDataStore.setVotes(props.id)
+  CommentService.getNewsById(newsId).then((response) => {
+    newsStore.setNews(response.data)
+    NewsService.getHasCommented(news.value!.id, authUser.user!.id).then((response) => {
+      hasCommented.value = response.data
+    })
+  })
+  console.log('User', authUser.user)
+  console.log('News', news.value)
 })
 const isFocus = ref<boolean>(false)
+const authUser = useAuthStore()
+const newsReporter = computed(() => {
+  return news.value?.reporter
+})
+
+const isOwnNews = computed(() => {
+  return authUser.user?.id == newsReporter.value?.id
+})
+const uploader = ref<InstanceType<typeof ImageUpload> | null>(null)
+const hasCommented = ref<boolean>()
+
 /**
  * Should add function to check whether user is reader or unknown
  * If reader , check whether he/she already has voted on this news
@@ -83,7 +104,7 @@ function clickBtn() {
   }
 
   // news id received from props from layoutview, in router
-  const newsId = props.id
+
   const user = useAuthStore().user
   console.log('Posted Comment:', comment.value)
   VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, newsId, user!).then(
@@ -101,6 +122,12 @@ function clickBtn() {
       voteType.value = 0
       comment.value = ''
       imgLink.value = []
+      uploader.value.resetUploader()
+
+      NewsService.getHasCommented(news.value!.id, authUser.user!.id).then((response) => {
+        hasCommented.value = response.data
+      })
+
       // scrollTo({
       //   top: 0,
       //   behavior: 'smooth',
@@ -130,7 +157,11 @@ function clickBtn() {
         </div>
       </div>
 
-      <div id="form" class="bg-white p-6 space-y-5" v-if="isAuthorized">
+      <div
+        id="form"
+        class="bg-white p-6 space-y-5"
+        v-if="isAuthorized && !isOwnNews && !hasCommented"
+      >
         <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
 
         <!-- Authentic option -->
@@ -186,7 +217,7 @@ function clickBtn() {
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
           />
-          <ImageUpload v-model="imgLink" :multiple="false" :max="1" />
+          <ImageUpload v-model="imgLink" :multiple="false" :max="1" ref="uploader" />
         </div>
         <button
           @click="clickBtn"
@@ -198,6 +229,19 @@ function clickBtn() {
         </button>
         <!-- <div v-if="btnDisable">Please Fill Al</div> -->
       </div>
+      <div
+        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
+        v-else-if="isOwnNews"
+      >
+        <p><strong>Note:</strong> You are the author of this news. Voting is disabled for you.</p>
+      </div>
+      <div
+        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
+        v-else-if="hasCommented"
+      >
+        <p><strong>Note:</strong> You have already submitted a vote for this news.</p>
+      </div>
+
       <div id="form" class="bg-white p-6 space-y-5" v-else>
         <h2 class="text-lg font-semibold text-gray-900 mb-2">
           You must be logged in to vote on this article

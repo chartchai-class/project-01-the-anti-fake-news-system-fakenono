@@ -35,9 +35,24 @@ const authStore = useAuthStore()
 const authorizationHeader = computed(() => {
   return { Authorization: authStore.authorizationHeader }
 })
+
+const uploaderKey = ref(0)
+
+const resetUploader = () => {
+  media.value = []
+  uploaderKey.value++
+}
+defineExpose({ resetUploader })
 </script>
 
 <template>
-  <Uploader v-bind="$attrs" :server="uploadUrl" @change="onChanged" :media="media" :headers="authorizationHeader">
+  <Uploader
+    v-bind="$attrs"
+    :server="uploadUrl"
+    @change="onChanged"
+    :media="media"
+    :headers="authorizationHeader"
+    :key="uploaderKey"
+  >
   </Uploader>
 </template>

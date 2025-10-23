@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isAuthorize } from '@/authorizationHelper'
 import CommentService from '@/services/CommentService'
+import NewsService from '@/services/NewsService'
 import { useCommentCountStore, useCommentListStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { useVoteDataStore } from '@/stores/votesTrackList'
@@ -56,8 +57,15 @@ function fetchComments() {
       commentCountStore.setCountNum(parseInt(response.headers['x-total-count']))
       voteDataStore.setVotes(props.id)
       voteDataStore.setVotes(props.id)
+      // News need to be refetched
     },
   )
+}
+
+function fetchNews() {
+  NewsService.getNewsById(props.id).then((response) => {
+    newsStore.setNews(response.data)
+  })
 }
 
 const hasNextPage = () => {
@@ -80,6 +88,7 @@ function deleteCommentHandle(commentId: number) {
     toast.success('The comment has been successfully deleted!')
     console.log(response.status)
     fetchComments()
+    fetchNews()
   })
 }
 </script>
