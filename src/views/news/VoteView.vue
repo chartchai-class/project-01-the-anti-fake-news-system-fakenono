@@ -107,8 +107,8 @@ function clickBtn() {
 
   const user = useAuthStore().user
   console.log('Posted Comment:', comment.value)
-  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, newsId, user!).then(
-    (response) => {
+  VoteCommentService.postVoteAndComment(commentToPost.value, voteToPost.value, newsId, user!)
+    .then((response) => {
       console.log(response.status, 'Post Done')
       notiString.value = ' Your vote has been recorded.'
       CommentService.getNewsById(newsId).then((response) => {
@@ -135,8 +135,10 @@ function clickBtn() {
       setTimeout(() => {
         posted.value = false
       }, 3000)
-    },
-  )
+    })
+    .catch(() => {
+      toast.error('Error Occured!')
+    })
 }
 </script>
 

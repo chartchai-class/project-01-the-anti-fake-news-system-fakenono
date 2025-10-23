@@ -84,12 +84,16 @@ function decrease() {
 }
 
 function deleteCommentHandle(commentId: number) {
-  CommentService.deleteComment(commentId).then((response) => {
-    toast.success('The comment has been successfully deleted!')
-    console.log(response.status)
-    fetchComments()
-    fetchNews()
-  })
+  CommentService.deleteComment(commentId)
+    .then((response) => {
+      toast.success('The comment has been successfully deleted!')
+      console.log(response.status)
+      fetchComments()
+      fetchNews()
+    })
+    .catch(() => {
+      toast.error('Error occurred!')
+    })
 }
 </script>
 
