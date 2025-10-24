@@ -255,14 +255,14 @@ function clickBtn() {
 
         <div class="flex gap-4">
           <RouterLink
-            to="/login"
+            :to="{ name: 'login-view' }"
             class="px-5 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
           >
             Log In
           </RouterLink>
 
           <RouterLink
-            to="/register"
+            :to="{ name: 'registration-view' }"
             class="px-5 py-2 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-600 hover:text-white transition duration-200"
           >
             Register
