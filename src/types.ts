@@ -107,6 +107,9 @@ export interface RoleRequest {
   reason?: string
   requestStatus: RoleRequestStatus
   requestedDate: Date
+  fromRole: UserRoles
+  toRole: UserRoles
+  userId: number
 }
 
 export interface UpdateUser {

@@ -1,4 +1,6 @@
-import AdminDashboardView from '@/views/AdminDashboardView.vue'
+import AdminDashboardView from '@/views/admin/DashboardView.vue'
+import AdminLayoutView from '@/views/admin/LayoutView.vue'
+import MemberRequestView from '@/views/admin/MemberRequestView.vue'
 import HomeView from '@/views/HomeView.vue'
 import CommentsView from '@/views/news/CommentsView.vue'
 import DetailsView from '@/views/news/DetailsView.vue'
@@ -81,9 +83,21 @@ const router = createRouter({
       component: NotFoundView,
     },
     {
-      path: '/dashboard',
-      name: 'admin-dashboard-view',
-      component: AdminDashboardView,
+      path: '/admin',
+      name: 'admin-layout-view',
+      component: AdminLayoutView,
+      children: [
+        {
+          path: 'dashboard',
+          name: 'admin-dashboard-view',
+          component: AdminDashboardView,
+        },
+        {
+          path: 'member-requests',
+          name: 'admin-member-requests-view',
+          component: MemberRequestView,
+        },
+      ],
     },
     {
       path: '/user/update',
