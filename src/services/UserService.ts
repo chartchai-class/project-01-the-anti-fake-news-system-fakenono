@@ -11,4 +11,7 @@ export default {
   UpdateImage(userId: number, updateImage) {
     return apiClient.patch(`/user/${userId}/updateImage`, updateImage)
   },
+  getAllUsers() {
+    return apiClient.get('/users')
+  },
 }

@@ -34,7 +34,7 @@ const errorMessage = ref('')
 const router = useRouter()
 const authStore = useAuthStore()
 
-const onSubmit = async (values: RegisterForm) => {
+const onSubmit = handleSubmit(async (values: RegisterForm) => {
   try {
     await authStore.signUp(
       values.name,
@@ -48,7 +48,7 @@ const onSubmit = async (values: RegisterForm) => {
   } catch {
     errorMessage.value = 'Registration failed. Please try again.'
   }
-}
+})
 
 // async function handleRegistration() {
 //   try {
@@ -69,7 +69,7 @@ const onSubmit = async (values: RegisterForm) => {
 
 <template>
   <div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-xl shadow-md">
-    <form @submit.prevent="handleSubmit(onSubmit)" class="space-y-6">
+    <form @submit.prevent="onSubmit" class="space-y-6">
       <h2 class="text-2xl font-bold text-center text-gray-800">Registration</h2>
       <div>
         <label for="name" class="block text-lg font-semibold text-gray-700 mb-2">First name</label>

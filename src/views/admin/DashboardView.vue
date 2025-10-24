@@ -5,7 +5,6 @@ import NewsStatusPieChart from '@/components/NewsStatusPieChart.vue'
 import DashboardService from '@/services/DashboardService'
 import type { DashboardStats } from '@/types'
 import {
-  ArrowLeftIcon,
   BookOpenIcon,
   ChatBubbleLeftRightIcon,
   CheckBadgeIcon,
@@ -23,14 +22,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="m-4">
-    <RouterLink :to="{ name: 'home' }" class="flex flex-row justify-start">
-      <ArrowLeftIcon class="h-6 w-6 text-black mb-4 cursor-pointer" />
-      Back
-    </RouterLink>
-    <h1 class="text-xl font-bold">Dashboard</h1>
-  </div>
-
   <div class="flex flex-col">
     <div class="flex flex-row">
       <DashboardCountCard
@@ -77,7 +68,7 @@ onMounted(() => {
         :verifiedCount="stats?.verifiedNewsCount || 0"
         :fakeCount="stats?.fakeNewsCount || 0"
         :pendingCount="stats?.pendingNewsCount || 0"
-        class="w-[30%] justify-self-center"
+        class="w-64 justify-self-center"
       />
     </div>
   </div>

@@ -25,14 +25,14 @@ const authStore = useAuthStore()
 
 const errorMessage = ref('')
 
-const onSubmit = async (values: { username: string; password: string }) => {
+const onSubmit = handleSubmit(async (values: { username: string; password: string }) => {
   try {
     await authStore.login(values.username, values.password)
     router.push('/')
   } catch {
     errorMessage.value = 'Login failed. Please check your credentials.'
   }
-}
+})
 
 // async function handleLogin() {
 //   try {
@@ -46,7 +46,7 @@ const onSubmit = async (values: { username: string; password: string }) => {
 
 <template>
   <div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-xl shadow-md">
-    <form @submit.prevent="handleSubmit(onSubmit)" class="space-y-6">
+    <form @submit.prevent="onSubmit" class="space-y-6">
       <h2 class="text-2xl font-bold text-center text-gray-800">Login</h2>
 
       <div>
