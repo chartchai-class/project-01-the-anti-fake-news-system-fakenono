@@ -5,15 +5,16 @@ export default {
   theme: {
     extend: {
       animation: {
-        fade:'greenFade 3s ease-in-out'
+        fade: 'greenFade 3s ease-in-out',
       },
       keyframes: {
         greenFade: {
           '0%': { backgroundColor: 'green' },
-          '100%':{backgroundColor:'transparent'}
-        }
-      }
+          '100%': { backgroundColor: 'transparent' },
+        },
+      },
     },
   },
-  plugins: [],
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require('@tailwindcss/forms')],
 } satisfies Config

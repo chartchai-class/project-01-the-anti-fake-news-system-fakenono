@@ -108,3 +108,10 @@ export interface RoleRequest {
   requestStatus: RoleRequestStatus
   requestedDate: Date
 }
+
+export interface UpdateUser {
+  name: string
+  surname: string
+  // username: string
+  email: string
+}

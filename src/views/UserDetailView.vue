@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import NewsCardListForm from '@/components/NewsCardListForm.vue'
+import ProfileImageUpload from '@/components/ProfileImageUpload.vue'
 import NewsService from '@/services/NewsService'
 import RoleRequestService from '@/services/RoleRequestService'
 import UserService from '@/services/UserService'
 import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { RoleRequestStatus, UserRoles, type News, type RoleRequest, type User } from '@/types'
-import { EnvelopeIcon } from '@heroicons/vue/16/solid'
+import { EnvelopeIcon, PencilSquareIcon } from '@heroicons/vue/16/solid'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-
 const authStore = useAuthStore()
 const user = ref<User>()
 const router = useRouter()
@@ -79,6 +79,18 @@ const requestHandle = () => {
       toast.error('Error')
     })
 }
+
+const editHandle = () => {
+  router.push({ name: 'user-update-view' })
+}
+
+const handleImageUpload = (imageUrl: string) => {
+  user.value!.imageUrl = imageUrl
+  NewsService.getNewsByUserId(user.value!.id).then((response) => {
+    postedNews.value = response.data
+  })
+  toast.success('Profile Image Updated Successfully!')
+}
 </script>
 
 <template>
@@ -97,44 +109,57 @@ const requestHandle = () => {
     >
       <!-- Profile Image -->
       <div
-        class="profile-image w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 border-2 border-slate-300"
+        class="profile-image w-24 h-24 sm:w-32 sm:h-32 rounded-full flex-shrink-0 border-2 border-slate-300"
       >
-        <img :src="image_url" alt="profile image" class="w-full h-full object-cover" />
+        <!-- <img :src="image_url" alt="profile image" class="w-full h-full object-cover" /> -->
+        <ProfileImageUpload
+          v-if="user"
+          :initial-image="user?.imageUrl"
+          :userId="user?.id"
+          @uploaded="handleImageUpload"
+        />
       </div>
 
       <!-- User Info -->
       <div class="detail flex-1 sm:ml-6 mt-4 sm:mt-0 text-center sm:text-left">
-        <div class="space-y-1">
-          <div class="text-2xl font-semibold text-gray-800">
-            {{ user?.name }}
-            <span
-              v-if="user?.roles.includes(UserRoles.ROLE_ADMIN)"
-              class="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-full"
-            >
-              ADMIN
-            </span>
+        <div class="space-y-1 flex">
+          <div>
+            <div class="text-2xl font-semibold text-gray-800">
+              {{ user?.name }}
+              <span
+                v-if="user?.roles.includes(UserRoles.ROLE_ADMIN)"
+                class="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-full"
+              >
+                ADMIN
+              </span>
 
-            <span
-              v-else-if="user?.roles.includes(UserRoles.ROLE_MEMBER)"
-              class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-full"
-            >
-              MEMBER
-            </span>
+              <span
+                v-else-if="user?.roles.includes(UserRoles.ROLE_MEMBER)"
+                class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-full"
+              >
+                MEMBER
+              </span>
 
-            <span
-              v-else-if="user?.roles.includes(UserRoles.ROLE_READER)"
-              class="px-3 py-1 text-sm font-medium text-gray-800 bg-gray-200 rounded-full"
-            >
-              READER
-            </span>
+              <span
+                v-else-if="user?.roles.includes(UserRoles.ROLE_READER)"
+                class="px-3 py-1 text-sm font-medium text-gray-800 bg-gray-200 rounded-full"
+              >
+                READER
+              </span>
+            </div>
+            <div class="text-gray-500">@{{ user?.username }}</div>
+            <div class="text-sm text-gray-600">
+              <EnvelopeIcon class="h-6 w-6 text-black inline" />
+              <span>{{ user?.email }}</span> •
+              <span class="text-gray-400"
+                >Joined since {{ new Date(user?.createdAt).toLocaleDateString() }}</span
+              >
+            </div>
           </div>
-          <div class="text-gray-500">@{{ user?.username }}</div>
-          <div class="text-sm text-gray-600">
-            <EnvelopeIcon class="h-6 w-6 text-black inline" />
-            <span>{{ user?.email }}</span> •
-            <span class="text-gray-400"
-              >Joined since {{ new Date(user?.createdAt).toLocaleDateString() }}</span
-            >
+          <div class="edit ml-auto">
+            <button @click.prevent="editHandle">
+              <PencilSquareIcon class="h-6 w-6 inline" />Edit
+            </button>
           </div>
         </div>
 
@@ -238,7 +263,7 @@ const requestHandle = () => {
       </h2>
 
       <div v-for="news in postedNews" :key="news.id" class="news-list">
-        <NewsCardListForm :news="news" />
+        <NewsCardListForm :news="news" :is-admin="false" />
       </div>
     </div>
   </div>

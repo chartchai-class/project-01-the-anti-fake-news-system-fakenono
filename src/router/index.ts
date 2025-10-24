@@ -7,6 +7,7 @@ import VoteView from '@/views/news/VoteView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import PostView from '@/views/PostView.vue'
 import UserDetailView from '@/views/UserDetailView.vue'
+import UserUpdateView from '@/views/UserUpdateView.vue'
 import nProgress from 'nprogress'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -83,6 +84,11 @@ const router = createRouter({
       path: '/dashboard',
       name: 'admin-dashboard-view',
       component: AdminDashboardView,
+    },
+    {
+      path: '/user/update',
+      name: 'user-update-view',
+      component: UserUpdateView,
     },
   ],
   scrollBehavior(to, from, savedPosition) {
