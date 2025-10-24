@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 //import axios from 'axios'
-import { useForm, useField } from 'vee-validate'
+import { useField, useForm } from 'vee-validate'
 import * as yup from 'yup'
 
 const loginSchema = yup.object({
@@ -50,22 +50,38 @@ const onSubmit = async (values: { username: string; password: string }) => {
       <h2 class="text-2xl font-bold text-center text-gray-800">Login</h2>
 
       <div>
-        <label for="username" class="block text-lg font-semibold text-gray-700 mb-2">Username</label>
-        <input id="username" v-model="username" type="text" placeholder="Enter your username"
-          class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <label for="username" class="block text-lg font-semibold text-gray-700 mb-2"
+          >Username</label
+        >
+        <input
+          id="username"
+          v-model="username"
+          type="text"
+          placeholder="Enter your username"
+          class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <span class="text-red-500 text-sm">{{ errors.username }}</span>
       </div>
 
       <div>
-        <label for="password" class="block text-lg font-semibold text-gray-700 mb-2">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password"
-          class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <label for="password" class="block text-lg font-semibold text-gray-700 mb-2"
+          >Password</label
+        >
+        <input
+          id="password"
+          v-model="password"
+          type="password"
+          placeholder="Enter your password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <span class="text-red-500 text-sm">{{ errors.password }}</span>
       </div>
 
       <div class="text-center">
-        <button type="submit"
-          class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition">
+        <button
+          type="submit"
+          class="px-6 py-2 bg-black text-white font-semibold rounded-xl hover:bg-white hover:text-black transition"
+        >
           Login
         </button>
       </div>

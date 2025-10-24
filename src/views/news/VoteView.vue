@@ -295,7 +295,7 @@ function clickBtn() {
             <div class="bg-red-600 rounded-md w-[50%] sm:w-[35%] text-center text-white">Fake</div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 'Pending'">
-            <div class="bg-gray-600 rounded-md text-center text-white w-[50%] sm:w-[35%]">
+            <div class="bg-gray-600 rounded-md text-center text-white w-[50%] lg:w-[35%]">
               Pending
             </div>
           </div>

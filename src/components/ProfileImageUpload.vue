@@ -1,21 +1,25 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center w-auto">
     <!-- Profile Image -->
-    <img
+    <!-- <img
       :src="profileImage || defaultImage"
       alt="Profile Image"
       class="w-32 h-32 rounded-full object-cover border-2 border-gray-300 mb-3"
-    />
+    /> -->
+    <div class="w-32 h-32 mb-1 rounded-full overflow-hidden border-2 border-gray-300">
+      <img
+        :src="profileImage || emptyImageUrl"
+        alt="Profile Image"
+        class="w-full h-full object-cover"
+      />
+    </div>
 
     <!-- File input -->
     <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileSelect" />
 
     <!-- Upload button -->
-    <button
-      @click="fileInput.click()"
-      class="px-1 py-1 bg-black text-white text-sm rounded transition"
-    >
-      Change
+    <button @click="fileInput.click()" class="px-5 w-auto text-sm rounded transition">
+      <PencilSquareIcon class="w-3 h-3 inline-block" />Change
     </button>
 
     <!-- Uploading indicator -->
@@ -24,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { PencilSquareIcon } from '@heroicons/vue/16/solid'
 import { defineEmits, defineProps, onMounted, ref } from 'vue'
 
 // Props and emits
@@ -38,9 +43,10 @@ const emit = defineEmits<{
 
 // State
 const profileImage = ref(props.initialImage || null)
-const defaultImage = '/images/default-avatar.png'
 const fileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
+const emptyImageUrl =
+  'https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg'
 
 // File upload handler
 async function handleFileSelect(event: Event) {

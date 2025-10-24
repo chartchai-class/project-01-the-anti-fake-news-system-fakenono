@@ -22,7 +22,7 @@ const isAdmin = computed(() => {
 
 //Need to remove when Login page is created
 const tempLoginHandle = () => {
-  authStore.login('user', 'user') //to remove later
+  authStore.login('admin', 'admin') //to remove later
 }
 const tempLogoutHandle = () => {
   authStore.logout()

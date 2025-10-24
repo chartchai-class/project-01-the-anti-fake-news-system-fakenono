@@ -6,10 +6,12 @@ import {
   UserIcon,
   UserPlusIcon,
 } from '@heroicons/vue/16/solid'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isAuthorize } from './authorizationHelper'
+import UserService from './services/UserService'
 import { useAuthStore } from './stores/auth'
-import { UserRoles } from './types'
+import { UserRoles, type User } from './types'
 
 const authStore = useAuthStore()
 
@@ -23,15 +25,29 @@ const isAdmin = computed(() => {
 })
 const isOpen = ref<boolean>()
 const dropdownRef = ref(null)
+const userObj = ref<User>()
+const emptyImageUrl =
+  'https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg'
 
 function handleClickOutside(event) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     isOpen.value = false
   }
 }
-
+const authUserRef = storeToRefs(authStore)
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  watch(
+    authUserRef.user,
+    () => {
+      if (authStore.user) {
+        UserService.getUserById(authStore.user.id).then((response) => {
+          userObj.value = response.data
+        })
+      }
+    },
+    { immediate: true },
+  )
 })
 
 onBeforeUnmount(() => {
@@ -51,24 +67,24 @@ function logout() {
 </script>
 
 <template>
-  <header class="bg-black sticky top-0 flex items-center justify-between px-6 py-4 z-50">
+  <header class="bg-black sticky top-0 flex items-center justify-between px-6 pr-2 py-4 z-50">
     <!-- <div class="w-1/3"></div> -->
     <h1 class="text-4xl font-bold text-white text-center w-auto mr-auto">FakeNoNo</h1>
-    <div class="w-1/3 flex justify-end space-x-4">
+    <div class="w-1/3 flex justify-end">
       <router-link to="/login" v-if="!isLoggedIn">
-        <button class="px-4 py-2 bg-white text-black rounded hover:bg-green-200 transition">
+        <button class="py-2 md:mr-3 text-white rounded transition">
           <ArrowLeftEndOnRectangleIcon class="w-6 h-6 inline" /> Login
         </button>
       </router-link>
       <router-link to="/registration" v-if="!isLoggedIn">
-        <button class="px-4 py-2 bg-white text-black rounded hover:bg-green-200 transition">
+        <button class="py-2 text-white rounded transition">
           <UserPlusIcon class="h-6 w-6 inline" /> Register
         </button>
       </router-link>
 
       <div class="drop-down relative" ref="dropdownRef">
         <img
-          :src="authStore.user?.imageUrl || '/images/default-avatar.png'"
+          :src="userObj?.imageUrl || emptyImageUrl"
           @click="isOpen = !isOpen"
           @focusout="isOpen = false"
           class="w-[40px] h-[40px] rounded-full cursor-pointer"
