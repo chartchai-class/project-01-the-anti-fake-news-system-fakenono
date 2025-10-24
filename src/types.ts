@@ -112,6 +112,6 @@ export interface RoleRequest {
 export interface UpdateUser {
   name: string
   surname: string
-  username: string
+  // username: string
   email: string
 }

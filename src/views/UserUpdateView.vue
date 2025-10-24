@@ -27,7 +27,7 @@ UserService.getUserById(authUser.user.id)
 const schema = object({
   name: string().required('Name is required'),
   surname: string().required('Surname is required'),
-  username: string().required('Username is required'),
+  // username: string().required('Username is required'),
   email: string().email().required('Email is required'),
 })
 
@@ -36,7 +36,7 @@ const { handleSubmit, setValues, values, isSubmitting } = useForm({
   initialValues: {
     name: '',
     surname: '',
-    username: '',
+    // username: '',
     email: '',
   },
   validationSchema: schema,
@@ -116,7 +116,7 @@ function handleCancle() {
           <ErrorMessage name="surname" class="text-red-500 text-sm mt-1 block" />
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label class="block text-gray-700 text-sm font-medium mb-1"> Username </label>
           <Field
             name="username"
@@ -125,7 +125,7 @@ function handleCancle() {
           />
           <ErrorMessage name="username" class="text-red-500 text-sm mt-1 block" />
         </div>
-
+ -->
         <div class="form-group">
           <label class="block text-gray-700 text-sm font-medium mb-1"> Email </label>
           <Field

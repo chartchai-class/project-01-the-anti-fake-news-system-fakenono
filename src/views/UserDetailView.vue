@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import NewsCardListForm from '@/components/NewsCardListForm.vue'
+import ProfileImageUpload from '@/components/ProfileImageUpload.vue'
 import NewsService from '@/services/NewsService'
 import RoleRequestService from '@/services/RoleRequestService'
 import UserService from '@/services/UserService'
@@ -10,7 +11,6 @@ import { EnvelopeIcon, PencilSquareIcon } from '@heroicons/vue/16/solid'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-
 const authStore = useAuthStore()
 const user = ref<User>()
 const router = useRouter()
@@ -83,6 +83,14 @@ const requestHandle = () => {
 const editHandle = () => {
   router.push({ name: 'user-update-view' })
 }
+
+const handleImageUpload = (imageUrl: string) => {
+  user.value!.imageUrl = imageUrl
+  NewsService.getNewsByUserId(user.value!.id).then((response) => {
+    postedNews.value = response.data
+  })
+  toast.success('Profile Image Updated Successfully!')
+}
 </script>
 
 <template>
@@ -101,9 +109,15 @@ const editHandle = () => {
     >
       <!-- Profile Image -->
       <div
-        class="profile-image w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 border-2 border-slate-300"
+        class="profile-image w-24 h-24 sm:w-32 sm:h-32 rounded-full flex-shrink-0 border-2 border-slate-300"
       >
-        <img :src="image_url" alt="profile image" class="w-full h-full object-cover" />
+        <!-- <img :src="image_url" alt="profile image" class="w-full h-full object-cover" /> -->
+        <ProfileImageUpload
+          v-if="user"
+          :initial-image="user?.imageUrl"
+          :userId="user?.id"
+          @uploaded="handleImageUpload"
+        />
       </div>
 
       <!-- User Info -->
@@ -249,7 +263,7 @@ const editHandle = () => {
       </h2>
 
       <div v-for="news in postedNews" :key="news.id" class="news-list">
-        <NewsCardListForm :news="news" />
+        <NewsCardListForm :news="news" :is-admin="false" />
       </div>
     </div>
   </div>

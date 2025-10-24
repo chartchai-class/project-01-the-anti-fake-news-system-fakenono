@@ -8,4 +8,7 @@ export default {
   UpdateUser(userId: number, updateDTO: UpdateUser) {
     return apiClient.put('/user/' + userId, updateDTO)
   },
+  UpdateImage(userId: number, updateImage) {
+    return apiClient.patch(`/user/${userId}/updateImage`, updateImage)
+  },
 }
