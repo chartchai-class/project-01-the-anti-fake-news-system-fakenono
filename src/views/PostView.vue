@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import ImageUpload from '@/components/ImageUpload.vue'
 import NewsService from '@/services/NewsService'
+import UserService from '@/services/UserService'
 import { useAuthStore } from '@/stores/auth'
-import { ref } from 'vue'
+import type { User } from '@/types'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const topic = ref('')
@@ -52,11 +54,21 @@ function cancelPost() {
   reporter.value = ''
   router.push({ name: 'home' })
 }
+
+const user: User = ref<User>()
+onMounted(() => {
+  UserService.getUserById(authStore.user.id).then((response) => {
+    user.value = response.data
+  })
+})
+const isMember = computed(() => {
+  return user.value?.roles.includes('ROLE_MEMBER')
+})
 </script>
 
 <template>
   <div
-    v-if="!authStore.isMember"
+    v-if="!isMember"
     class="flex flex-col items-center border p-8 m-4 md:m-16 rounded-lg shadow-lg fixed bg-white z-50 w-[50%] left-[20%] top-[20%]"
   >
     <h3 class="text-lg lg:text-xl font-bold mb-2 mt-4">You must be a member to post news.</h3>
@@ -82,7 +94,7 @@ function cancelPost() {
       Go Back Home
     </button>
   </div>
-  <div :class="authStore.isMember ? '' : 'opacity-20 pointer-events-none'">
+  <div :class="isMember ? '' : 'opacity-20 pointer-events-none'">
     <h1 class="text-xl lg:text-3xl font-bold mb-2 mt-8 ml-16">Create a New Post</h1>
     <form
       @submit.prevent="submitPost"
