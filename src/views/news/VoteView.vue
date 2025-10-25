@@ -213,12 +213,12 @@ function clickBtn() {
             @focus="isFocus = true"
             @blur="isFocus = false"
           ></textarea>
-          <input
+          <!-- <input
             type="text"
             v-model="imgLink"
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
-          />
+          /> -->
           <ImageUpload v-model="imgLink" :multiple="false" :max="1" ref="uploader" />
         </div>
         <button
@@ -255,14 +255,14 @@ function clickBtn() {
 
         <div class="flex gap-4">
           <RouterLink
-            to="/login"
+            :to="{ name: 'login-view' }"
             class="px-5 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
           >
             Log In
           </RouterLink>
 
           <RouterLink
-            to="/register"
+            :to="{ name: 'registration-view' }"
             class="px-5 py-2 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-600 hover:text-white transition duration-200"
           >
             Register
@@ -295,7 +295,7 @@ function clickBtn() {
             <div class="bg-red-600 rounded-md w-[50%] sm:w-[35%] text-center text-white">Fake</div>
           </div>
           <div id="status" class="flex-1" v-if="news?.status == 'Pending'">
-            <div class="bg-gray-600 rounded-md text-center text-white w-[50%] sm:w-[35%]">
+            <div class="bg-gray-600 rounded-md text-center text-white w-[50%] lg:w-[35%]">
               Pending
             </div>
           </div>
@@ -319,7 +319,7 @@ function clickBtn() {
           >.
         </li>
         <li class="mb-2">
-          If the fake votes are more than 60% of total votes, the news is marked as
+          If the fake votes are more than 40% of total votes, the news is marked as
           <strong class="bg-red-600 text-white border rounded-lg px-2 font-semibold mx-2"
             >Fake</strong
           >.

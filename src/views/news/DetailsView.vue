@@ -47,7 +47,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <p class="text-gray-600">📝 {{ news.reporter!.name }} — {{ formatDate(news.datetime) }}</p>
+    <p class="text-gray-600">By {{ news.reporter!.name }} <br />{{ formatDate(news.datetime) }}</p>
 
     <img
       :src="news.image"

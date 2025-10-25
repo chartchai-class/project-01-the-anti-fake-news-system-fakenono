@@ -27,14 +27,15 @@ const props = defineProps<{ id: number }>() //newsId
 const isAdmin = computed(() => {
   return isAuthorize([UserRoles.ROLE_ADMIN])
 })
+const emptyImageUrl = import.meta.env.VITE_EMPTY_IMAGE_URL
 
 const voteDataStore = useVoteDataStore()
-const realVote = computed(() => {
-  return voteDataStore.voteData?.realVoteCount
-})
-const fakeVote = computed(() => {
-  return voteDataStore.voteData?.fakeVoteCount
-})
+// const realVote = computed(() => {
+//   return voteDataStore.voteData?.realVoteCount
+// })
+// const fakeVote = computed(() => {
+//   return voteDataStore.voteData?.fakeVoteCount
+// })
 
 const toast = useToast()
 
@@ -98,15 +99,15 @@ function deleteCommentHandle(commentId: number) {
 </script>
 
 <template>
-  <div class="comment md:w-[80%] w-[95%] mx-auto mt-10">
+  <div class="comment md:w-[80%] w-[90%] mx-auto mt-10">
     <div class="header border-b-2 border-gray-900 pb-2 mb-5" id="cmt-header">
       <div class="h2 text-2xl font-semibold mb-5">Comments & Discussion</div>
       <div class="desc text-gray-600">
         Discussion about <span class="font-bold"> "{{ news?.topic }}"</span>
       </div>
       <div class="flex flex-wrap gap-4 mt-2">
-        <div id="upvoke " class="text-green-600">{{ realVote }} real votes</div>
-        <div id="downvoke" class="text-red-600">{{ fakeVote }} fake votes</div>
+        <!-- <div id="upvoke " class="text-green-600">{{ realVote }} real votes</div>
+        <div id="downvoke" class="text-red-600">{{ fakeVote }} fake votes</div> -->
         <div id="status" class="px-2" v-if="news?.status == NewsStatus.Verified">
           <div class="bg-green-600 rounded-md text-center text-white">Verified</div>
         </div>
@@ -133,11 +134,16 @@ function deleteCommentHandle(commentId: number) {
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-gray-900 font-semibold flex gap-2 items-center">
             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-              <span class="text-sm font-medium text-gray-600">{{
+              <!-- <span class="text-sm font-medium text-gray-600">{{
                 cmt.commenter?.substring(0, 2).toUpperCase()
-              }}</span>
+              }}</span> -->
+              <img
+                :src="cmt.commenter?.imageUrl || emptyImageUrl"
+                alt=""
+                class="w-8 h-8 rounded-full"
+              />
             </div>
-            {{ cmt.commenter }}
+            {{ cmt.commenter?.username }}
           </h3>
           <div class="flex flex-col">
             <span class="text-sm text-gray-500">{{

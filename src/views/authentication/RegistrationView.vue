@@ -139,7 +139,7 @@ const onSubmit = handleSubmit(async (values: RegisterForm) => {
       <div class="text-center">
         <button
           type="submit"
-          class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition"
+          class="px-6 py-2 bg-black text-white font-semibold rounded-xl hover:bg-white hover:text-black transition"
         >
           Register
         </button>
