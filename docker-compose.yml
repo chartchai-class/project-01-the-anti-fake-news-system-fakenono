@@ -1,5 +1,5 @@
 services:
   web:
-    image: "se331-frontend:latest"
+    image: "waiyanmoelwin/se331-frontend:latest"
     ports:
       - "8001:80"
