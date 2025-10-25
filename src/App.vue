@@ -26,8 +26,7 @@ const isAdmin = computed(() => {
 const isOpen = ref<boolean>()
 const dropdownRef = ref(null)
 const userObj = ref<User>()
-const emptyImageUrl =
-  'https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg'
+const emptyImageUrl = import.meta.env.VITE_EMPTY_IMAGE_URL
 
 function handleClickOutside(event) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
@@ -47,6 +46,12 @@ onMounted(() => {
       }
     },
     { immediate: true },
+  )
+  watch(
+    () => authUserRef.user.value?.imageUrl,
+    (newImage) => {
+      if (userObj.value) userObj.value.imageUrl = newImage
+    },
   )
 })
 

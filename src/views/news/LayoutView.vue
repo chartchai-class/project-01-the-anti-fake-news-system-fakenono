@@ -20,13 +20,6 @@ const isAdmin = computed(() => {
   return isAuthorize([UserRoles.ROLE_ADMIN])
 })
 
-//Need to remove when Login page is created
-const tempLoginHandle = () => {
-  authStore.login('admin', 'admin') //to remove later
-}
-const tempLogoutHandle = () => {
-  authStore.logout()
-}
 onMounted(() => {
   console.log('User', authStore.user)
   loadNews()
@@ -97,8 +90,4 @@ function loadNews() {
       Votes
     </RouterLink>
   </div>
-
-  <!-- Temp Login Button -->
-  <button @click="tempLoginHandle">Login</button>
-  <button @click="tempLogoutHandle">Logout</button>
 </template>

@@ -213,12 +213,12 @@ function clickBtn() {
             @focus="isFocus = true"
             @blur="isFocus = false"
           ></textarea>
-          <input
+          <!-- <input
             type="text"
             v-model="imgLink"
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
-          />
+          /> -->
           <ImageUpload v-model="imgLink" :multiple="false" :max="1" ref="uploader" />
         </div>
         <button
@@ -319,7 +319,7 @@ function clickBtn() {
           >.
         </li>
         <li class="mb-2">
-          If the fake votes are more than 60% of total votes, the news is marked as
+          If the fake votes are more than 40% of total votes, the news is marked as
           <strong class="bg-red-600 text-white border rounded-lg px-2 font-semibold mx-2"
             >Fake</strong
           >.

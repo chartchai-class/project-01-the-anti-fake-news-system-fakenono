@@ -29,7 +29,7 @@ export interface NewsListState {
 export interface Comment {
   id?: number
   newsId?: number
-  commenter?: string
+  commenter?: User
   date?: Date
   comment: string
   imageLink?: string

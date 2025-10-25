@@ -27,6 +27,7 @@ const props = defineProps<{ id: number }>() //newsId
 const isAdmin = computed(() => {
   return isAuthorize([UserRoles.ROLE_ADMIN])
 })
+const emptyImageUrl = import.meta.env.VITE_EMPTY_IMAGE_URL
 
 const voteDataStore = useVoteDataStore()
 // const realVote = computed(() => {
@@ -133,11 +134,16 @@ function deleteCommentHandle(commentId: number) {
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-gray-900 font-semibold flex gap-2 items-center">
             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-              <span class="text-sm font-medium text-gray-600">{{
+              <!-- <span class="text-sm font-medium text-gray-600">{{
                 cmt.commenter?.substring(0, 2).toUpperCase()
-              }}</span>
+              }}</span> -->
+              <img
+                :src="cmt.commenter?.imageUrl || emptyImageUrl"
+                alt=""
+                class="w-8 h-8 rounded-full"
+              />
             </div>
-            {{ cmt.commenter }}
+            {{ cmt.commenter?.username }}
           </h3>
           <div class="flex flex-col">
             <span class="text-sm text-gray-500">{{

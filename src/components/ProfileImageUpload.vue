@@ -45,8 +45,8 @@ const emit = defineEmits<{
 const profileImage = ref(props.initialImage || null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
-const emptyImageUrl =
-  'https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg'
+const emptyImageUrl = import.meta.env.VITE_EMPTY_IMAGE_URL
+const base_url = import.meta.env.VITE_BACKEND_URL
 
 // File upload handler
 async function handleFileSelect(event: Event) {
@@ -71,7 +71,7 @@ async function handleFileSelect(event: Event) {
     const imageUrl = uploadData.name // make sure backend returns this key
 
     // 2️⃣ Send image URL to update user's profile
-    const updateResponse = await fetch(`http://localhost:8080/user/${props.userId}/updateImage`, {
+    const updateResponse = await fetch(`${base_url}/user/${props.userId}/updateImage`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

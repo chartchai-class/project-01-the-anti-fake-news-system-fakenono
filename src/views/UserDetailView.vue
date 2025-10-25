@@ -90,6 +90,7 @@ const handleImageUpload = (imageUrl: string) => {
   NewsService.getNewsByUserId(user.value!.id).then((response) => {
     postedNews.value = response.data
   })
+  authStore.user!.imageUrl = imageUrl
   toast.success('Profile Image Updated Successfully!')
 }
 </script>
