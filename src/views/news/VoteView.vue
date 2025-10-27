@@ -13,7 +13,7 @@ import { useVoteDataStore } from '@/stores/votesTrackList'
 import { UserRoles, VoteType, type Comment, type Vote } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 
 const newsStore = useNewsStore()
@@ -49,12 +49,19 @@ onMounted(() => {
   voteDataStore.setVotes(props.id)
   CommentService.getNewsById(newsId).then((response) => {
     newsStore.setNews(response.data)
-    NewsService.getHasCommented(news.value!.id, authUser.user!.id).then((response) => {
-      hasCommented.value = response.data
-    })
+    if (authUser.user) {
+      NewsService.getHasCommented(news.value!.id, authUser.user!.id).then((response) => {
+        hasCommented.value = response.data
+      })
+    }
   })
   console.log('User', authUser.user)
   console.log('News', news.value)
+  watch(userStoreRef.user, (newUser) => {
+    if (!newUser) {
+      hasCommented.value = false
+    }
+  })
 })
 const isFocus = ref<boolean>(false)
 const authUser = useAuthStore()
@@ -67,6 +74,7 @@ const isOwnNews = computed(() => {
 })
 const uploader = ref<InstanceType<typeof ImageUpload> | null>(null)
 const hasCommented = ref<boolean>()
+const userStoreRef = storeToRefs(authUser)
 
 /**
  * Should add function to check whether user is reader or unknown
