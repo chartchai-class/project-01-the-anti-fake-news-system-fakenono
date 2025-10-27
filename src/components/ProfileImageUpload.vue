@@ -29,7 +29,9 @@
 
 <script setup lang="ts">
 import { PencilSquareIcon } from '@heroicons/vue/16/solid'
+import nProgress from 'nprogress'
 import { defineEmits, defineProps, onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 
 // Props and emits
 const props = defineProps<{
@@ -47,6 +49,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 const emptyImageUrl = import.meta.env.VITE_EMPTY_IMAGE_URL
 const base_url = import.meta.env.VITE_BACKEND_URL
+const toast = useToast()
 
 // File upload handler
 async function handleFileSelect(event: Event) {
@@ -59,6 +62,7 @@ async function handleFileSelect(event: Event) {
   const uploadImageUrl = import.meta.env.VITE_UPLOAD_URL
   try {
     isUploading.value = true
+    nProgress.start()
 
     // 1️⃣ Upload to backend to get image URL
     const uploadResponse = await fetch(uploadImageUrl, {
@@ -86,9 +90,10 @@ async function handleFileSelect(event: Event) {
     emit('uploaded', profileImage.value)
   } catch (err) {
     console.error(err)
-    alert('Upload failed. Please try again.')
+    toast.error('Upload Error!')
   } finally {
     isUploading.value = false
+    nProgress.done()
     if (fileInput.value) fileInput.value.value = '' // reset file input
   }
 }
