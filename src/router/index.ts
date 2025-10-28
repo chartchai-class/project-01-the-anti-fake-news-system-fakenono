@@ -1,3 +1,5 @@
+import UserService from '@/services/UserService'
+import { useAuthStore } from '@/stores/auth'
 import AdminDashboardView from '@/views/admin/DashboardView.vue'
 import AdminLayoutView from '@/views/admin/LayoutView.vue'
 import MemberRequestView from '@/views/admin/MemberRequestView.vue'
@@ -65,6 +67,19 @@ const router = createRouter({
       path: '/post',
       name: 'news-post-view',
       component: PostView,
+      beforeEnter: (to, from, next) => {
+        const authStore = useAuthStore()
+        UserService.getUserById(authStore.user.id)
+          .then((response) => {
+            authStore.setUser(response.data)
+          })
+          .catch(() => {
+            authStore.setUser(null)
+          })
+          .finally(() => {
+            next()
+          })
+      },
     },
     {
       path: '/user',
