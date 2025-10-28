@@ -74,7 +74,9 @@ function logout() {
 <template>
   <header class="bg-black sticky top-0 flex items-center justify-between px-6 pr-2 py-4 z-50">
     <!-- <div class="w-1/3"></div> -->
-    <h1 class="text-4xl font-bold text-white text-center w-auto mr-auto">FakeNoNo</h1>
+    <RouterLink to="/" class="text-4xl font-bold text-white text-center w-auto mr-auto"
+      >FakeNoNo</RouterLink
+    >
     <div class="w-1/3 flex justify-end">
       <router-link to="/login" v-if="!isLoggedIn">
         <button class="py-2 md:mr-3 text-white rounded transition">
