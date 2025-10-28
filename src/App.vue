@@ -100,6 +100,7 @@ function logout() {
         <div
           v-if="isOpen"
           class="absolute right-0 mt-[3%] w-44 bg-white rounded-lg shadow-sm border"
+          @click.prevent="isOpen = false"
         >
           <ul class="py-2 px-2 text-sm text-gray-700">
             <li class="mb-2">
