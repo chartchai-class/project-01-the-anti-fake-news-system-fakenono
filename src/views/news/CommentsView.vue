@@ -6,6 +6,7 @@ import { useCommentCountStore, useCommentListStore } from '@/stores/commentlists
 import { useNewsStore } from '@/stores/news'
 import { useVoteDataStore } from '@/stores/votesTrackList'
 import { NewsStatus, UserRoles } from '@/types'
+import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
@@ -53,6 +54,7 @@ onMounted(() => {
 })
 
 function fetchComments() {
+  nProgress.start()
   CommentService.getCommentsByNewsId(props.id, perPage.value, currentPage.value).then(
     (response) => {
       commentlist.value = response.data
@@ -60,6 +62,7 @@ function fetchComments() {
       voteDataStore.setVotes(props.id)
       voteDataStore.setVotes(props.id)
       // News need to be refetched
+      nProgress.done()
     },
   )
 }
