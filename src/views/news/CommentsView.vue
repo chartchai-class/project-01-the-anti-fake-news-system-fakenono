@@ -8,6 +8,7 @@ import { useVoteDataStore } from '@/stores/votesTrackList'
 import { NewsStatus, UserRoles } from '@/types'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 const newsStore = useNewsStore()
@@ -96,6 +97,10 @@ function deleteCommentHandle(commentId: number) {
       toast.error('Error occurred!')
     })
 }
+
+onBeforeRouteLeave(() => {
+  commentlist.value = null
+})
 </script>
 
 <template>

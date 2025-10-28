@@ -47,18 +47,19 @@ function getRoleRequest() {
 onMounted(() => {
   if (!authStore.user) {
     router.push({ name: '404-resource-view', params: { resource: 'User' } })
+  } else {
+    UserService.getUserById(authStore.user!.id).then((response) => {
+      user.value = response.data
+      console.log(user.value)
+      getRoleRequest()
+      NewsService.getNewsByUserId(user.value!.id).then((response) => {
+        postedNews.value = response.data
+      })
+      VoteCommentService.getVoteByUserId(user.value!.id).then((response) => {
+        totalVoteCount.value = Number(response.data)
+      })
+    })
   }
-  UserService.getUserById(authStore.user!.id).then((response) => {
-    user.value = response.data
-    console.log(user.value)
-    getRoleRequest()
-    NewsService.getNewsByUserId(user.value!.id).then((response) => {
-      postedNews.value = response.data
-    })
-    VoteCommentService.getVoteByUserId(user.value!.id).then((response) => {
-      totalVoteCount.value = Number(response.data)
-    })
-  })
   //   UserService.getUserById(authStore.user!.id).then((response) => {
   //     user.value = response.data
   //     console.log(user.value)
