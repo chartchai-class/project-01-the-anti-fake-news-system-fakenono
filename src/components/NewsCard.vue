@@ -66,7 +66,7 @@ function handleDelete() {
         >
       </h3>
       <img :src="news.image" alt="News Image" class="w-full h-48 object-cover rounded-lg mb-4" />
-      <p class="text-gray-600 break-words">{{ news.details.slice(0, 150) }}...</p>
+      <p class="text-gray-600 break-words">{{ news.details.slice(0, 120) }}...</p>
       <p class="text-sm text-gray-500 mt-2">
         <span class="font-semibold">{{ news.reporter.username }}</span> |
         <span>{{ new Date(news.datetime).toLocaleDateString() }}</span>

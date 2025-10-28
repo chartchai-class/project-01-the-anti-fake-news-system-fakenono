@@ -333,7 +333,7 @@ function clickBtn() {
           >.
         </li>
         <li class="mb-2">
-          If total votes are less than 20, the news is marked as
+          If total votes are less than 5, the news is marked as
           <strong class="bg-gray-600 text-white border rounded-lg px-2 font-semibold mx-2"
             >Pending</strong
           >

@@ -107,7 +107,7 @@ function toggleView() {
 }
 
 const authStore = useAuthStore()
-const isAdmin = authStore.isAdmin
+const isAdmin = computed(() => authStore.isAdmin)
 const toast = useToast()
 
 function handleDeleteNews(deletedNewsId: number) {
