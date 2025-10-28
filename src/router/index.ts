@@ -69,7 +69,7 @@ const router = createRouter({
       component: PostView,
       beforeEnter: (to, from, next) => {
         const authStore = useAuthStore()
-        UserService.getUserById(authStore.user.id)
+        UserService.getUserById(authStore.user?.id || 0)
           .then((response) => {
             authStore.setUser(response.data)
           })

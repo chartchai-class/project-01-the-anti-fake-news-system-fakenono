@@ -75,7 +75,7 @@ async function handleFileSelect(event: Event) {
     const imageUrl = uploadData.name // make sure backend returns this key
 
     // 2️⃣ Send image URL to update user's profile
-    const updateResponse = await fetch(`${base_url}/user/${props.userId}/updateImage`, {
+    const updateResponse = await fetch(`${base_url}user/${props.userId}/updateImage`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
