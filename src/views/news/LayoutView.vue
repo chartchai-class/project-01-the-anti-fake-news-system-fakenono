@@ -6,7 +6,7 @@ import { useCommentCountStore } from '@/stores/commentlists'
 import { useNewsStore } from '@/stores/news'
 import { UserRoles } from '@/types'
 import { computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
 const newsId = parseInt(useRoute().params.id.toString())
 const router = useRouter()
@@ -45,6 +45,9 @@ function loadNews() {
       router.push({ name: '404-resource-view', params: { resource: 'News' } })
     })
 }
+onBeforeRouteLeave(() => {
+  newsStore.setNews(null)
+})
 </script>
 
 <template>

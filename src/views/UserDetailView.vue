@@ -9,7 +9,8 @@ import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { RoleRequestStatus, UserRoles, type News, type RoleRequest, type User } from '@/types'
 import { EnvelopeIcon, PencilSquareIcon } from '@heroicons/vue/16/solid'
-import { computed, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 const authStore = useAuthStore()
@@ -23,6 +24,7 @@ const postedNewsCount = computed(() => {
 const totalVoteCount = ref<number>()
 const roleRequest = ref<RoleRequest>()
 const hasRequested = ref<boolean>()
+const userStoreRef = storeToRefs(authStore)
 function getRoleRequest() {
   RoleRequestService.getRoleRequest(user.value!.id)
     .then((response) => {
@@ -45,23 +47,29 @@ function getRoleRequest() {
 onMounted(() => {
   if (!authStore.user) {
     router.push({ name: '404-resource-view', params: { resource: 'User' } })
+  } else {
+    UserService.getUserById(authStore.user!.id).then((response) => {
+      user.value = response.data
+      console.log(user.value)
+      getRoleRequest()
+      NewsService.getNewsByUserId(user.value!.id).then((response) => {
+        postedNews.value = response.data
+      })
+      VoteCommentService.getVoteByUserId(user.value!.id).then((response) => {
+        totalVoteCount.value = Number(response.data)
+      })
+    })
   }
-  UserService.getUserById(authStore.user!.id).then((response) => {
-    user.value = response.data
-    console.log(user.value)
-    getRoleRequest()
-    NewsService.getNewsByUserId(user.value!.id).then((response) => {
-      postedNews.value = response.data
-    })
-    VoteCommentService.getVoteByUserId(user.value!.id).then((response) => {
-      totalVoteCount.value = Number(response.data)
-    })
-  })
   //   UserService.getUserById(authStore.user!.id).then((response) => {
   //     user.value = response.data
   //     console.log(user.value)
   //     getRoleRequest()
   //   })
+  watch(userStoreRef.user, (newUser) => {
+    if (!newUser) {
+      router.push({ name: 'home' })
+    }
+  })
 })
 const image_url = computed(() => {
   return (

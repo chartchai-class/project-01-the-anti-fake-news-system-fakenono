@@ -3,8 +3,9 @@ import UserService from '@/services/UserService'
 import { useAuthStore } from '@/stores/auth'
 import type { UpdateUser } from '@/types'
 import isEqual from 'lodash/isEqual'
+import { storeToRefs } from 'pinia'
 import { ErrorMessage, Field, useForm } from 'vee-validate'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { object, string } from 'yup'
@@ -12,7 +13,7 @@ import { object, string } from 'yup'
 // store and data
 const authUser = useAuthStore()
 const updateUser = ref<UpdateUser>()
-
+const userStoreRef = storeToRefs(authUser)
 // fetch user data
 UserService.getUserById(authUser.user.id)
   .then((response) => {
@@ -84,6 +85,14 @@ const router = useRouter()
 function handleCancle() {
   router.push({ name: 'user-detail-view' })
 }
+
+onMounted(() => {
+  watch(userStoreRef.user, (newUser) => {
+    if (!newUser) {
+      router.push({ name: 'home' })
+    }
+  })
+})
 </script>
 
 <template>

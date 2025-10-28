@@ -28,7 +28,11 @@ const errorMessage = ref('')
 const onSubmit = handleSubmit(async (values: { username: string; password: string }) => {
   try {
     await authStore.login(values.username, values.password)
-    router.push('/')
+    if (previousRoute == '/registration') {
+      router.push({ name: 'home' })
+    } else {
+      router.push(previousRoute as string)
+    }
   } catch {
     errorMessage.value = 'Login failed. Please check your credentials.'
   }
@@ -42,6 +46,9 @@ const onSubmit = handleSubmit(async (values: { username: string; password: strin
 //     errorMessage.value = 'Login failed. Please check your credentials.'
 //   }
 // }
+
+const previousRoute = router.options.history.state.back
+console.log(previousRoute)
 </script>
 
 <template>
