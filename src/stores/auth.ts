@@ -31,10 +31,7 @@ export const useAuthStore = defineStore('auth', {
       return this.user?.roles.includes(UserRoles.ROLE_READER) || false
     },
     authorizationHeader(): string {
-      return this.token
-    },
-    setUser(user: User): void {
-      this.user = user
+      return this.token || ''
     },
   },
   actions: {
@@ -89,6 +86,9 @@ export const useAuthStore = defineStore('auth', {
           // axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
           return response
         })
+    },
+    setUser(user: User): void {
+      this.user = user
     },
   },
 })
