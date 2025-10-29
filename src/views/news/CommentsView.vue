@@ -8,6 +8,7 @@ import { useVoteDataStore } from '@/stores/votesTrackList'
 import { NewsStatus, UserRoles } from '@/types'
 import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
+import Viewer from 'viewerjs'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useToast } from 'vue-toastification'
@@ -104,6 +105,27 @@ function deleteCommentHandle(commentId: number) {
 onBeforeRouteLeave(() => {
   commentlist.value = null
 })
+
+function showImagePreview(imageLink: string) {
+  // Create a temporary div
+  const div = document.createElement('div')
+  const img = document.createElement('img')
+  img.src = imageLink
+  div.appendChild(img)
+  document.body.appendChild(div)
+
+  const viewer = new Viewer(div, {
+    toolbar: true,
+    title: false,
+    navbar: false,
+    hidden() {
+      viewer.destroy()
+      document.body.removeChild(div)
+    },
+  })
+
+  viewer.show()
+}
 </script>
 
 <template>
@@ -182,7 +204,9 @@ onBeforeRouteLeave(() => {
           />
           <br />
           <span class="text-sm text-gray-500" v-if="cmt.imageLink"
-            ><a :href="cmt.imageLink" target="_blank">View Image</a></span
+            ><button @click.prevent="showImagePreview(cmt.imageLink)" target="_blank">
+              View Image
+            </button></span
           >
         </div>
       </div>
