@@ -5,7 +5,7 @@ import NewsService from '@/services/NewsService'
 import { useAuthStore } from '@/stores/auth'
 import { type News } from '@/types'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 const route = useRoute()
@@ -138,6 +138,11 @@ watch(keyword, (newKeyword) => {
   } else {
     params.value['search'] = newKeyword
   }
+})
+
+onBeforeRouteLeave(() => {
+  keyword.value = ''
+  newslist.value = []
 })
 </script>
 
