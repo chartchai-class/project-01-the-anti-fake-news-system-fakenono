@@ -5,7 +5,7 @@ import NewsService from '@/services/NewsService'
 import { useAuthStore } from '@/stores/auth'
 import { type News } from '@/types'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 const route = useRoute()
@@ -76,6 +76,7 @@ watch([page, limit], ([newPage, newLimit]) => {
     })
     params.value['page'] = newPage
     params.value['limit'] = newLimit
+    newslist.value = []
     return
   }
   router.push({
@@ -97,6 +98,7 @@ watch(
     limit.value = newLimit
     params.value['page'] = newPage
     params.value['limit'] = newLimit
+    newslist.value = []
   },
   { immediate: true },
 )
@@ -138,11 +140,6 @@ watch(keyword, (newKeyword) => {
   } else {
     params.value['search'] = newKeyword
   }
-})
-
-onBeforeRouteLeave(() => {
-  keyword.value = ''
-  newslist.value = []
 })
 </script>
 
