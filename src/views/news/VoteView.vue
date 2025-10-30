@@ -45,14 +45,21 @@ const btnDisable = computed(() => {
 })
 const toast = useToast()
 const newsId = props.id
+const isLoading = ref<boolean>(true)
 onMounted(() => {
   voteDataStore.setVotes(props.id)
   CommentService.getNewsById(newsId).then((response) => {
     newsStore.setNews(response.data)
     if (authUser.user) {
-      NewsService.getHasCommented(news.value!.id, authUser.user!.id).then((response) => {
-        hasCommented.value = response.data
-      })
+      NewsService.getHasCommented(news.value!.id, authUser.user!.id)
+        .then((response) => {
+          hasCommented.value = response.data
+        })
+        .finally(() => {
+          isLoading.value = false
+        })
+    } else {
+      isLoading.value = false
     }
   })
   console.log('User', authUser.user)
@@ -167,118 +174,122 @@ function clickBtn() {
         </div>
       </div>
 
-      <div
-        id="form"
-        class="bg-white p-6 space-y-5"
-        v-if="isAuthorized && !isOwnNews && !hasCommented"
-      >
-        <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
-
-        <!-- Authentic option -->
-        <label
-          class="flex items-start gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 cursor-pointer"
+      <div v-if="isLoading">
+        <div class="text-center">Loading...</div>
+      </div>
+      <div v-else>
+        <div
+          id="form"
+          class="bg-white p-6 space-y-5"
+          v-if="isAuthorized && !isOwnNews && !hasCommented"
         >
-          <input
-            type="radio"
-            name="vote-news"
-            class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-            value="0"
-            v-model="voteType"
-          />
-          <Thumb :is-up="true" />
+          <h2 class="text-lg font-semibold text-gray-900">Your assessment on this article</h2>
 
-          <span class="text-gray-700">This news appears to be authentic</span>
-        </label>
+          <!-- Authentic option -->
+          <label
+            class="flex items-start gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 cursor-pointer"
+          >
+            <input
+              type="radio"
+              name="vote-news"
+              class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+              value="0"
+              v-model="voteType"
+            />
+            <Thumb :is-up="true" />
 
-        <!-- Fake option -->
-        <label
-          class="flex items-start gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 cursor-pointer"
-        >
-          <input
-            type="radio"
-            name="vote-news"
-            class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-            value="1"
-            v-model="voteType"
-          />
-          <Thumb :is-up="false" />
-          <span class="text-gray-700">This news appears to be fake or misleading</span>
-        </label>
+            <span class="text-gray-700">This news appears to be authentic</span>
+          </label>
 
-        <!-- Comment box -->
-        <div class="space-y-2">
-          <h2 class="text-lg font-semibold text-gray-900">Reason for your assessment</h2>
-          <div v-if="comment.trim() == '' && isFocus" class="text-red-500">
-            This field is required
-          </div>
+          <!-- Fake option -->
+          <label
+            class="flex items-start gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 cursor-pointer"
+          >
+            <input
+              type="radio"
+              name="vote-news"
+              class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+              value="1"
+              v-model="voteType"
+            />
+            <Thumb :is-up="false" />
+            <span class="text-gray-700">This news appears to be fake or misleading</span>
+          </label>
 
-          <textarea
-            rows="4"
-            class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
-            placeholder="Share your reasoning..."
-            v-model="comment"
-            required
-            @focus="isFocus = true"
-            @blur="isFocus = false"
-          ></textarea>
-          <!-- <input
+          <!-- Comment box -->
+          <div class="space-y-2">
+            <h2 class="text-lg font-semibold text-gray-900">Reason for your assessment</h2>
+            <div v-if="comment.trim() == '' && isFocus" class="text-red-500">
+              This field is required
+            </div>
+
+            <textarea
+              rows="4"
+              class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
+              placeholder="Share your reasoning..."
+              v-model="comment"
+              required
+              @focus="isFocus = true"
+              @blur="isFocus = false"
+            ></textarea>
+            <!-- <input
             type="text"
             v-model="imgLink"
             placeholder="Image link (optional)"
             class="w-full rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-100 p-3 text-gray-700"
           /> -->
-          <ImageUpload v-model="imgLink" :multiple="false" :max="1" ref="uploader" />
+            <ImageUpload v-model="imgLink" :multiple="false" :max="1" ref="uploader" />
+          </div>
+          <button
+            @click="clickBtn"
+            :disabled="btnDisable"
+            class="md:w-[10%] w-[40%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
+            :class="{ 'opacity-50 cursor-not-allowed hover:cursor-not-allowed': btnDisable }"
+          >
+            Submit
+          </button>
+          <!-- <div v-if="btnDisable">Please Fill Al</div> -->
         </div>
-        <button
-          @click="clickBtn"
-          :disabled="btnDisable"
-          class="md:w-[10%] w-[40%] bg-transparent border border-black rounded-md text-black hover:cursor-pointer hover:bg-black hover:text-white px-5 py-1 mx-auto"
-          :class="{ 'opacity-50 cursor-not-allowed hover:cursor-not-allowed': btnDisable }"
+        <div
+          class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
+          v-else-if="isOwnNews"
         >
-          Submit
-        </button>
-        <!-- <div v-if="btnDisable">Please Fill Al</div> -->
-      </div>
-      <div
-        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
-        v-else-if="isOwnNews"
-      >
-        <p><strong>Note:</strong> You are the author of this news. Voting is disabled for you.</p>
-      </div>
-      <div
-        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
-        v-else-if="hasCommented"
-      >
-        <p><strong>Note:</strong> You have already submitted a vote for this news.</p>
-      </div>
+          <p><strong>Note:</strong> You are the author of this news. Voting is disabled for you.</p>
+        </div>
+        <div
+          class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded"
+          v-else-if="hasCommented"
+        >
+          <p><strong>Note:</strong> You have already submitted a vote for this news.</p>
+        </div>
 
-      <div id="form" class="bg-white p-6 space-y-5" v-else>
-        <h2 class="text-lg font-semibold text-gray-900 mb-2">
-          You must be logged in to vote on this article
-        </h2>
-        <p class="text-gray-600 mb-4">
-          Please log in or create an account to share your opinion and help verify news
-          authenticity.
-        </p>
+        <div id="form" class="bg-white p-6 space-y-5" v-else>
+          <h2 class="text-lg font-semibold text-gray-900 mb-2">
+            You must be logged in to vote on this article
+          </h2>
+          <p class="text-gray-600 mb-4">
+            Please log in or create an account to share your opinion and help verify news
+            authenticity.
+          </p>
 
-        <div class="flex gap-4">
-          <RouterLink
-            :to="{ name: 'login-view' }"
-            class="px-5 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
-          >
-            Log In
-          </RouterLink>
+          <div class="flex gap-4">
+            <RouterLink
+              :to="{ name: 'login-view' }"
+              class="px-5 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
+            >
+              Log In
+            </RouterLink>
 
-          <RouterLink
-            :to="{ name: 'registration-view' }"
-            class="px-5 py-2 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-600 hover:text-white transition duration-200"
-          >
-            Register
-          </RouterLink>
+            <RouterLink
+              :to="{ name: 'registration-view' }"
+              class="px-5 py-2 border border-gray-600 text-gray-600 rounded-md hover:bg-gray-600 hover:text-white transition duration-200"
+            >
+              Register
+            </RouterLink>
+          </div>
         </div>
       </div>
     </div>
-
     <div
       class="vote-stat p-5 mt-4 rounded-md border border-gray-200 flex justify-between flex-wrap"
     >

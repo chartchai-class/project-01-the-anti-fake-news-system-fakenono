@@ -9,6 +9,7 @@ import VoteCommentService from '@/services/VoteCommentService'
 import { useAuthStore } from '@/stores/auth'
 import { RoleRequestStatus, UserRoles, type News, type RoleRequest, type User } from '@/types'
 import { EnvelopeIcon, PencilSquareIcon } from '@heroicons/vue/16/solid'
+import nProgress from 'nprogress'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -42,8 +43,11 @@ function getRoleRequest() {
         }
       }
     })
+    .finally(() => {
+      isLoading.value = false
+    })
 }
-
+const isLoading = ref<boolean>(true)
 onMounted(() => {
   if (!authStore.user) {
     router.push({ name: '404-resource-view', params: { resource: 'User' } })
@@ -79,6 +83,7 @@ const image_url = computed(() => {
 })
 const toast = useToast()
 const requestHandle = () => {
+  nProgress.start()
   RoleRequestService.postRoleRequest(user.value!.id)
     .then((response) => {
       toast.success('Requested Successfully')
@@ -86,6 +91,9 @@ const requestHandle = () => {
     })
     .catch(() => {
       toast.error('Error')
+    })
+    .finally(() => {
+      nProgress.done()
     })
 }
 
@@ -195,7 +203,8 @@ const handleImageUpload = (imageUrl: string) => {
           </div>
 
           <div
-            class="request-role mt-2 p-4 bg-white w-full sm:w-auto text-center sm:text-left border border-gray-100 rounded-xl"
+            v-if="!isLoading"
+            class="request-role mt-2 p-4 bg-white w-full sm:w-auto text-center sm:text-left rounded-xl"
           >
             <!-- Default / Not Requested -->
             <button
