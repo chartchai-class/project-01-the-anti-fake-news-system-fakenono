@@ -12,4 +12,4 @@
 https://youtu.be/QPSImnD2m7U
 
 ## Website:
-https://project-01-the-anti-fake-news-syste-rho.vercel.app/
+http://fakenono.duckdns.org:8001
